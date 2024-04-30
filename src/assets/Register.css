@@ -1,0 +1,37 @@
+.form-demo {
+    width: 35%;
+    margin: 0 auto auto auto ;
+    margin-top: 50px;
+    padding: 2%;
+    border-radius: 5%;
+    border: 2px solid;
+    border-color: darkgray;
+    background-color: transparent;
+}
+
+.form-demo .card {
+    min-width: 100%;
+}
+.form-demo .card form {
+    margin-top: 2rem;
+}
+.form-demo .card .field {
+    margin-bottom: 1.5rem;
+}
+
+.button-container {
+    display: flex;
+}
+
+@media screen and (max-width: 960px) {
+    .form-demo .card {
+        width: 80%;
+    }
+}
+@media screen and (max-width: 640px) {
+    .form-demo .card {
+        width: 100%;
+        min-width: 0;
+    }
+}
+            
