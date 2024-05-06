@@ -1,11 +1,11 @@
-import { Avatar } from "primereact/avatar";
-import { Sidebar } from "primereact/sidebar";
-import { Tooltip } from "primereact/tooltip";
-import React, { Dispatch, SetStateAction, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { ThemeSwitcher } from "../ThemeSwitcher";
-import { Menu } from "primereact/menu";
-import { MenuItem, MenuItemCommandEvent } from "primereact/menuitem";
+import {Avatar} from "primereact/avatar";
+import {Sidebar} from "primereact/sidebar";
+import {Tooltip} from "primereact/tooltip";
+import React, {useRef} from "react";
+import {useNavigate} from "react-router-dom";
+import {ThemeSwitcher} from "../ThemeSwitcher";
+import {Menu} from "primereact/menu";
+import {MenuItem, MenuItemCommandEvent} from "primereact/menuitem";
 
 export function SidebarComponent ( props: ThemeSwitcher ) {
     const navigate = useNavigate();
@@ -29,16 +29,20 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
     }
     ]
 
-    const menu = useRef<Menu>(null);
+    const menu = useRef<Menu>();
     const items : MenuItem[] = [
-        /* {
+        {
             label: 'Login',
             command: (e) => { navigateToUrl(e, '/login') }
         },
         {
+            label: 'Login2',
+            command: (e) => { navigateToUrl(e, '/test2') }
+        },
+        {
             label: 'Register',
             command: (e) => { navigateToUrl(e, '/register') }
-        }, */
+        },
         {
             //label: 'Settings',
             icon: 'pi pi-cog'
@@ -53,15 +57,16 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
         e?.originalEvent?.preventDefault();
         navigate(url);
       }; 
-
+//TODO napraviti svoj sidebar jer ovaj radi pizdarije sa formama :)
     return (
         <>
             <Sidebar 
                     className="p-sidebar-sm" 
-                    visible={true}  
+                    visible={true}
                     modal={false}
                     onHide={() => {}} 
-                    autoFocus={false} style={{width: "auto"}}
+                    autoFocus={false}
+                    style={{width: "auto"}}
                     showCloseIcon={false}
                     header={false}
                     
@@ -97,7 +102,15 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
                             <div>
                                 <div className="mt-auto">
                                     <hr className="border-top-1 border-none surface-border" />
-                                    <Menu model={items} popup ref={menu} id="popup_menu_right" popupAlignment="left" style={{"width":"4em"}} />
+                                    <Menu
+                                        model={items}
+                                        popup
+                                        ref={menu}
+                                        id="popup_menu_right"
+                                        popupAlignment="left"
+                                        style={{"width":"4em"}}
+
+                                    />
                                     <a className="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple"
                                         onClick={(event) => menu.current?.toggle(event)} 
                                         aria-controls="popup_menu_right" 

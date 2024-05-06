@@ -1,16 +1,20 @@
 import { Button } from "primereact/button";
-import { useState } from "react";
+import React, {useReducer, useState} from "react";
 import { FieldMetaState, Form } from 'react-final-form';
-import { FormErrorDialog } from "./dialogs/FormErrorDialog";
-import { FormSuccessDialog } from "./dialogs/FormSuccessDialog";
-import { PasswordComponent } from "./form-components/PasswordComponent";
-import { Username } from "./form-components/Username";
+import { FormErrorDialog } from "../../dialogs/FormErrorDialog";
+import { FormSuccessDialog } from "../../dialogs/FormSuccessDialog";
+import { PasswordComponent } from "../../form-components/PasswordComponent";
+import { Username } from "../../form-components/Username";
+import { useNavigate } from "react-router-dom";
 import { FormApi } from 'final-form';
-import { formDataProps } from "../common/types";
+import { formDataProps } from "../../../common/types";
 
 export function Login() {
+    const navigate = useNavigate();
+
     const [showErrorMessage, setShowErrorMessage] = useState(false);
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
 
     const tempUser = {
         username : "trex",
@@ -18,7 +22,7 @@ export function Login() {
     }
 
     const validate = (data : formDataProps) => {
-        let errors : {username?: string; password?: string;} = {};
+        const errors : {username?: string; password?: string;} = {};
 
         if (!data.username) {
             errors.username = 'Username is required.';
@@ -32,7 +36,7 @@ export function Login() {
     };
 
     const onSubmit = (data: formDataProps, form: FormApi<formDataProps,formDataProps>) => {
-        
+        console.log(data)
         if(data.username != tempUser.username || data.password != tempUser.password){
             setShowErrorMessage(true)
             return
@@ -77,7 +81,7 @@ export function Login() {
                 <div className="card">
                     <h2 className="text-center">Login</h2>
                     <Form 
-                        onSubmit={onSubmit} 
+                        onSubmit={onSubmit}
                         initialValues={{ username: '', password: ''}} 
                         validate={validate} 
                         render={({ handleSubmit }) => (
@@ -93,6 +97,9 @@ export function Login() {
                             <Button type="submit" label="Login" className="mr-1"/>
                         </form>
                     )} />
+                    <p className="">Need an account?{" "}
+                        <a style={{color: "blueviolet"}} onClick={() => {navigate('/register')}}>Register</a>
+                    </p>
                 </div>
             </div>
         </div>

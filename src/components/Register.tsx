@@ -70,23 +70,27 @@ export function Register() {
                 <div className="card">
                     <h2 className="text-center">Register</h2>
                     <p className="text-center">Already have an account?{" "}
-                        <a style={{textDecoration: "underline"}} onClick={() => {navigate('/login')}}>Log in</a>
+                        <a style={{textDecoration: "underline", color:"blueviolet"}} onClick={() => {navigate('/login')}}>Log in</a>
                     </p>
-                    <Form onSubmit={onSubmit} initialValues={{ username: '', password: ''}} validate={validate} render={({ handleSubmit }) => (
-                        <form onSubmit={handleSubmit} className="p-fluid">
-                            <Username 
-                                isFormFieldValid={isFormFieldValid} 
-                                getFormErrorMessage={getFormErrorMessage}/>
-                            <PasswordComponent
-                                isFormFieldValid={isFormFieldValid} 
-                                getFormErrorMessage={getFormErrorMessage}
-                                header={passwordHeader} 
-                                footer={passwordFooter} 
-                            />
-                            <div className="button-container mt-2">
-                                <Button type="submit" label="Register!" className="ml-1" />
-                            </div>
-                        </form>
+                    <Form
+                        onSubmit={onSubmit}
+                        initialValues={{ username: '', password: ''}}
+                        validate={validate}
+                        render={({ handleSubmit }) => (
+                            <form onSubmit={handleSubmit} className="p-fluid">
+                                <Username
+                                    isFormFieldValid={isFormFieldValid}
+                                    getFormErrorMessage={getFormErrorMessage}/>
+                                <PasswordComponent
+                                    isFormFieldValid={isFormFieldValid}
+                                    getFormErrorMessage={getFormErrorMessage}
+                                    header={passwordHeader}
+                                    footer={passwordFooter}
+                                />
+                                <div className="button-container mt-2">
+                                    <Button type="submit" label="Register!" className="ml-1" />
+                                </div>
+                            </form>
                     )} />
                 </div>
             </div>

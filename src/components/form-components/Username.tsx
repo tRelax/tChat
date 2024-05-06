@@ -11,7 +11,7 @@ export function Username( props: FormFieldProps ){
                 <span className="p-float-label">
                     <InputText 
                         id="username" {...input} 
-                        autoFocus 
+                        //autoFocus
                         autoComplete="off"
                         className={classNames({ 'p-invalid': isFormFieldValid(meta) })} />
                     <label 
