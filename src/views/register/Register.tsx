@@ -1,105 +1,99 @@
-import {Button} from "primereact/button";
-import {Divider} from 'primereact/divider';
-import React, {useContext, useState} from "react";
-import {FieldMetaState, Form} from 'react-final-form';
-
-import '../../assets/Register.css';
-import {FormSuccessDialog} from "../../components/dialogs/FormSuccessDialog";
-import {PasswordComponent} from "../../components/form-components/PasswordComponent";
-import {Username} from "../../components/form-components/Username";
+import {Button} from 'primereact/button';
+import {useForm} from 'react-hook-form';
+import * as Yup from 'yup';
+import {yupResolver} from '@hookform/resolvers/yup';
+import FormInputText from "../../components/FormInputText";
+import {Messages} from "primereact/messages";
+import React, {useRef} from "react";
 import {useNavigate} from "react-router-dom";
-import {FormApi} from 'final-form';
 import {formDataProps} from "../../common/types";
-import {AuthContext} from "../../context/AuthContext";
+import {registerApi, RegisterResponse} from "./RegisterService";
+import {AxiosError} from "axios";
+import {CustomToastContainer} from "../../components/ToastComponent";
+import {toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../../assets/Register.css';
 
-export function Register() {
 
-    const { registerInfo, updateRegisterInfo } = useContext(AuthContext);
+interface RegisterSubmitForm extends formDataProps {
+    confirmPassword?: string
+}
 
+const schema = Yup.object().shape({
+    username: Yup.string().required("Required!"),
+    password: Yup.string().min(8, "Password too short").max(32)
+                .required("Required!")
+                .matches(/^(?=.*[a-z])/, 'Must contain at least one lowercase character')
+                .matches(/^(?=.*[A-Z])/, 'Must contain at least one uppercase character')
+                .matches(/^(?=.*\d)/, 'Must contain at least one number'),
+    confirmPassword: Yup.string().oneOf([Yup.ref("password")], "Passwords must match")
+});
+
+const Register = () => {
     const navigate = useNavigate();
-    const [showMessage, setShowMessage] = useState(false);
 
-    const validate = (data : formDataProps) => {
-        let errors : {username?: string; password?: string;} = {};
+    const {register, handleSubmit, formState: {errors}}
+        = useForm<RegisterSubmitForm>({resolver: yupResolver(schema)});
 
-        if (!data.username) {
-            errors.username = 'Username is required.';
+    const messages = useRef<Messages>();
+
+    const onSubmit = async (data: RegisterSubmitForm) => {
+        try {
+            await registerApi(data.username, data.password);
+
+            toast.success('Registration successful! Redirecting to login...', {
+                autoClose: 2000, // Close toast after 2 seconds
+                onClose: () => window.location.href = '/login', // Redirect on close
+            });
+
+        } catch (e) {
+            handleRequestFailure(e);
         }
+    }
+    function handleRequestFailure(e: AxiosError) {
+        const msg = e.response?.data;
 
-        if (!data.password) {
-            errors.password = 'Password is required.';
-        }
-
-        return errors;
-    };
-
-    const onSubmit = (data: formDataProps, form: FormApi<formDataProps, formDataProps>) => {
-        //sendFormData(data);
-        setShowMessage(true);
-
-        form.restart();
-        navigate('/login');
-    };
-
-    const isFormFieldValid = (meta : FieldMetaState<any>) => !!(meta.touched && meta.error);
-    const getFormErrorMessage = (meta : FieldMetaState<any>) => {
-        return isFormFieldValid(meta) && <small className="p-error">{meta.error}</small>;
-    };
-
-    const dialogFooter = <div className="flex justify-content-center"><Button label="OK" className="p-button-text" autoFocus onClick={() => setShowMessage(false) } /></div>;
-    const passwordHeader = <h6>Pick a password</h6>;
-    const passwordFooter = (
-        <React.Fragment>
-            <Divider />
-            <p className="mt-2">Suggestions</p>
-            <ul className="pl-2 ml-2 mt-0" style={{ lineHeight: '1.5' }}>
-                <li>At least one lowercase</li>
-                <li>At least one uppercase</li>
-                <li>At least one numeric</li>
-                <li>Minimum 8 characters</li>
-            </ul>
-        </React.Fragment>
-    );  
+        messages.current?.show({
+            detail: msg || "error getting data",
+            severity: 'error',
+            sticky: true,
+        });
+    }
 
     return (
         <div className="form-demo">
-            <FormSuccessDialog 
-                showMessage={showMessage} 
-                setShowMessage={setShowMessage} 
-                info={"Registration Successful!"}
-                dialogFooter={dialogFooter}
-            />
-
+            <Messages ref={messages} />
             <div className="flex justify-content-center">
                 <div className="card">
                     <h2 className="text-center">Register</h2>
                     <p className="text-center">Already have an account?{" "}
                         <a style={{textDecoration: "underline", color:"blueviolet"}} onClick={() => {navigate('/login')}}>Log in</a>
                     </p>
-                    <Form
-                        onSubmit={onSubmit}
-                        initialValues={{ username: '', password: ''}}
-                        validate={validate}
-                        render={({ handleSubmit }) => (
-                            <form onSubmit={handleSubmit} className="p-fluid">
-                                <Username
-                                    isFormFieldValid={isFormFieldValid}
-                                    getFormErrorMessage={getFormErrorMessage}
-                                    onChange={(e) => updateRegisterInfo({...registerInfo, username: e.target.value})}
-                                />
-                                <PasswordComponent
-                                    isFormFieldValid={isFormFieldValid}
-                                    getFormErrorMessage={getFormErrorMessage}
-                                    header={passwordHeader}
-                                    footer={passwordFooter}
-                                />
-                                <div className="button-container mt-2">
-                                    <Button type="submit" label="Register!" className="ml-1" />
-                                </div>
-                            </form>
-                    )} />
+                    <Messages ref={messages} />
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        <div className="mt-2 flex flex-column gap-4">
+                            <FormInputText
+                                name='username'
+                                type={'text'}
+                                placeholder={'username'}
+                                label={'username'}
+                                required
+                                register={register}
+                                errors={errors.username}
+                            />
+                            <FormInputText name='password' type={'password'} placeholder={'password'} label={'password'}
+                                           required register={register} errors={errors.password} />
+                            <FormInputText name='confirmPassword' type={'password'} placeholder={'confirm password'} label={'confirm password'}
+                                           required register={register} errors={errors.confirmPassword} />
+                            <Button type="submit" label="Register!"/>
+                            <CustomToastContainer />
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     );
-}
+
+};
+
+export default Register;

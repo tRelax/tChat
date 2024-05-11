@@ -1,107 +1,92 @@
-import { Button } from "primereact/button";
-import React, {useReducer, useState} from "react";
-import { FieldMetaState, Form } from 'react-final-form';
-import { FormErrorDialog } from "../../components/dialogs/FormErrorDialog";
-import { FormSuccessDialog } from "../../components/dialogs/FormSuccessDialog";
-import { PasswordComponent } from "../../components/form-components/PasswordComponent";
-import { Username } from "../../components/form-components/Username";
-import { useNavigate } from "react-router-dom";
-import { FormApi } from 'final-form';
-import { formDataProps } from "../../common/types";
+import {Button} from 'primereact/button';
+import {useForm} from 'react-hook-form';
+import * as Yup from 'yup';
+import {yupResolver} from '@hookform/resolvers/yup';
+import FormInputText from "../../components/FormInputText";
+import {Messages} from "primereact/messages";
+import React, {useRef} from "react";
+import {useNavigate} from "react-router-dom";
+import {formDataProps} from "../../common/types";
+import {toast} from "react-toastify";
+import {AxiosError} from "axios";
+import {loginApi} from "./LoginService";
+import useAuth from "../../context/AuthContext";
+import {CustomToastContainer} from "../../components/ToastComponent";
 
-export function Login() {
+const schema = Yup.object().shape({
+    username: Yup.string().required("Required!"),
+    password: Yup.string().required("Required!"),
+});
+
+const Login = () => {
+    const auth = useAuth();
     const navigate = useNavigate();
 
-    const [showErrorMessage, setShowErrorMessage] = useState(false);
-    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+    const {register, handleSubmit, formState: {errors}}
+        = useForm<formDataProps>({resolver: yupResolver(schema)});
 
+    const messages = useRef<Messages>();
 
-    const tempUser = {
-        username : "trex",
-        password : "pass"
+    const onSubmit = async (data: formDataProps) => {
+        try {
+            const response = await loginApi(data.username, data.password);
+
+            console.log(response?.data);
+
+            auth.setToken(response.data);
+
+            toast.success('Login successful!', {
+                autoClose: 2000,
+                onClose: () => window.location.href = '/',
+            });
+
+        } catch (e) {
+            handleRequestFailure(e);
+        }
     }
+    function handleRequestFailure(e: AxiosError) {
+        const msg = e.response?.data;
 
-    const validate = (data : formDataProps) => {
-        const errors : {username?: string; password?: string;} = {};
-
-        if (!data.username) {
-            errors.username = 'Username is required.';
-        }
-
-        if (!data.password) {
-            errors.password = 'Password is required.';
-        }
-
-        return errors;
-    };
-
-    const onSubmit = (data: formDataProps, form: FormApi<formDataProps,formDataProps>) => {
-        console.log(data)
-        if(data.username != tempUser.username || data.password != tempUser.password){
-            setShowErrorMessage(true)
-            return
-        }
-        //sendFormData(data);
-        setShowSuccessMessage(true);
-
-        form.restart();
-    };
-
-    const isFormFieldValid = (meta : FieldMetaState<any>) => !!(meta.touched && meta.error);
-    const getFormErrorMessage = (meta : FieldMetaState<any>) => {
-        return isFormFieldValid(meta) ? <small className="p-error">{meta.error}</small> : undefined;
-    };
-
-    const dialogFooter = 
-        <div className="flex justify-content-center">
-            <Button label="OK" 
-                    className="p-button-text" 
-                    autoFocus 
-                    onClick={() => {setShowSuccessMessage(false); setShowErrorMessage(false)} } />
-        </div>;
+        messages.current?.show({
+            detail: msg || "error getting data",
+            severity: 'error',
+            sticky: true,
+        });
+    }
 
     return (
         <div className="form-demo">
-            <FormSuccessDialog 
-                showMessage={showSuccessMessage}
-                setShowMessage={setShowSuccessMessage}
-                info={"Login Successful!"}
-                dialogFooter={dialogFooter}
-
-            />
-            <FormErrorDialog 
-                showMessage={showErrorMessage} 
-                setShowMessage={setShowErrorMessage} 
-                info={"Login failed!"}
-                description={"Check your credentials!"}
-                dialogFooter={dialogFooter}
-            />
-
+            <CustomToastContainer />
+            <Messages ref={messages} />
+            <p>Welcome {auth.authInfo.info?.username}</p>
             <div className="flex justify-content-center">
                 <div className="card">
                     <h2 className="text-center">Login</h2>
-                    <Form 
-                        onSubmit={onSubmit}
-                        initialValues={{ username: '', password: ''}} 
-                        validate={validate} 
-                        render={({ handleSubmit }) => (
-                        <form onSubmit={handleSubmit} className="p-fluid">
-                            <Username 
-                                isFormFieldValid={isFormFieldValid} 
-                                getFormErrorMessage={getFormErrorMessage}/>
-                            <PasswordComponent
-                                isFormFieldValid={isFormFieldValid} 
-                                getFormErrorMessage={getFormErrorMessage} 
+                    <Messages ref={messages} />
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        <div className="mt-2 flex flex-column gap-4">
+                            <FormInputText
+                                name='username'
+                                type={'text'}
+                                placeholder={'username'}
+                                label={'username'}
+                                required
+                                register={register}
+                                errors={errors.username}
                             />
-                            
-                            <Button type="submit" label="Login" className="mr-1"/>
-                        </form>
-                    )} />
-                    <p className="">Need an account?{" "}
-                        <a style={{color: "blueviolet"}} onClick={() => {navigate('/register')}}>Register</a>
+                            <FormInputText name='password' type={'password'} placeholder={'password'} label={'password'}
+                                           required register={register} />
+                            <Button type="submit" label="Login" />
+                        </div>
+                    </form>
+                    <p>Need an account?{" "}
+                        <a className="cursor-pointer" style={{color: "blueviolet"}} onClick={() => {navigate('/register')}}>Register</a>
                     </p>
                 </div>
             </div>
         </div>
     );
-}
+
+};
+
+export default Login;

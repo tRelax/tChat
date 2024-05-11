@@ -6,8 +6,12 @@ import {Tooltip} from "primereact/tooltip";
 import {MenuItem, MenuItemCommandEvent} from "primereact/menuitem";
 import {Avatar} from "primereact/avatar";
 import '../assets/Sidebar.css'
+import useAuth from "../context/AuthContext";
+import {CustomToastContainer} from "./ToastComponent";
+import {toast} from "react-toastify";
 
 export function SidebarComponent ( props: ThemeSwitcher ) {
+    const auth = useAuth();
     const navigate = useNavigate();
     const { lightState, setLightState } = props;
 
@@ -72,30 +76,31 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
     const menu = useRef<Menu>();
     const items : MenuItem[] = [
         {
-            label: 'L',
+            label: 'Login',
             command: (e) => { navigateToUrl(e, '/login') }
         },
         {
-            label: 'L2',
-            command: (e) => { navigateToUrl(e, '/test2') }
-        },
-        {
-            label: 'R',
+            label: 'Register',
             command: (e) => { navigateToUrl(e, '/register') }
-        },
-        {
-            label: 'R2',
-            command: (e) => { navigateToUrl(e, '/register2') }
         },
         {
             //label: 'Settings',
             icon: 'pi pi-cog'
         },
         {
-            //label: 'Logout',
-            icon: 'pi pi-power-off'
+            label: 'Logout',
+            icon: 'pi pi-power-off',
+            command: () => { logOut() }
         }
     ];
+
+    const logOut = () => {
+        auth.setToken(undefined);
+        toast.success('Logged out successfully!', {
+            autoClose: 2000,
+            onClose: () => window.location.href = '/',
+        });
+    };
 
     const navigateToUrl = (e: MenuItemCommandEvent, url: string) => {
         e?.originalEvent?.preventDefault();
@@ -111,6 +116,7 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
 
     return (
         <div style={sidebarShadowStyle.shadow} className="p-sidebar flex flex-column h-full justify-content-between p-3">
+            <CustomToastContainer />
             <div className="flex flex-column align-items-center">
                 <div className='mb-1' key={"homepage-div"}>
                     <Avatar
