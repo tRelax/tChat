@@ -3,8 +3,9 @@ import {useEffect, useState} from 'react'
 import {BrowserRouter} from 'react-router-dom';
 import {PossibleRoutes} from './common/PossibleRoutes';
 import {SidebarComponent} from './components/navbar-components/SidebarComponent';
-import {SidebarComponent2} from "./components/SidebarComponent2";
+import {SidebarComponent2} from "./components/SidebarComponent";
 import {MainLayout} from "./components/MainLayout";
+import {AuthContextProvider} from "./context/AuthContext";
 
 function App() {
   const [lightState, setLightState] = useState<boolean>(() => {
@@ -36,7 +37,9 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <MainLayout lightState={lightState} setLightState={setLightState}/>
+        <AuthContextProvider>
+          <MainLayout lightState={lightState} setLightState={setLightState}/>
+        </AuthContextProvider>
         {/*<SidebarComponent lightState={lightState} setLightState={setLightState}/>*/}
       </BrowserRouter>
       

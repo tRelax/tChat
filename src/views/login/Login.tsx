@@ -1,13 +1,13 @@
 import { Button } from "primereact/button";
 import React, {useReducer, useState} from "react";
 import { FieldMetaState, Form } from 'react-final-form';
-import { FormErrorDialog } from "../../dialogs/FormErrorDialog";
-import { FormSuccessDialog } from "../../dialogs/FormSuccessDialog";
-import { PasswordComponent } from "../../form-components/PasswordComponent";
-import { Username } from "../../form-components/Username";
+import { FormErrorDialog } from "../../components/dialogs/FormErrorDialog";
+import { FormSuccessDialog } from "../../components/dialogs/FormSuccessDialog";
+import { PasswordComponent } from "../../components/form-components/PasswordComponent";
+import { Username } from "../../components/form-components/Username";
 import { useNavigate } from "react-router-dom";
 import { FormApi } from 'final-form';
-import { formDataProps } from "../../../common/types";
+import { formDataProps } from "../../common/types";
 
 export function Login() {
     const navigate = useNavigate();

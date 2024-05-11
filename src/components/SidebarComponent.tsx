@@ -7,7 +7,7 @@ import {MenuItem, MenuItemCommandEvent} from "primereact/menuitem";
 import {Avatar} from "primereact/avatar";
 import '../assets/Sidebar.css'
 
-export function SidebarComponent2 ( props: ThemeSwitcher ) {
+export function SidebarComponent ( props: ThemeSwitcher ) {
     const navigate = useNavigate();
     const { lightState, setLightState } = props;
 
@@ -28,43 +28,43 @@ export function SidebarComponent2 ( props: ThemeSwitcher ) {
             icon:"pi pi-server"
         },
         {
-            id:3,
-            name:"name3",
+            id:4,
+            name:"name4",
             icon:"pi pi-server"
         },
         {
-            id:3,
-            name:"name3",
+            id:5,
+            name:"name5",
             icon:"pi pi-server"
         },
         {
-            id:3,
-            name:"name3",
+            id:6,
+            name:"name6",
             icon:"pi pi-server"
         },
         {
-            id:3,
-            name:"name3",
+            id:7,
+            name:"name7",
             icon:"pi pi-server"
         },
         {
-            id:3,
-            name:"name3",
+            id:8,
+            name:"name8",
             icon:"pi pi-server"
         },
         {
-            id:3,
-            name:"name3",
-            icon:"pi pi-server"
-        },
-        {
-            id:3,
+            id:9,
             name:"name9",
             icon:"pi pi-server"
         },
         {
-            id:3,
-            name:"name9",
+            id:10,
+            name:"name10",
+            icon:"pi pi-server"
+        },
+        {
+            id:11,
+            name:"name11",
             icon:"pi pi-server"
         }
     ]
@@ -72,16 +72,20 @@ export function SidebarComponent2 ( props: ThemeSwitcher ) {
     const menu = useRef<Menu>();
     const items : MenuItem[] = [
         {
-            label: 'Login',
+            label: 'L',
             command: (e) => { navigateToUrl(e, '/login') }
         },
         {
-            label: 'Login2',
+            label: 'L2',
             command: (e) => { navigateToUrl(e, '/test2') }
         },
         {
-            label: 'Register',
+            label: 'R',
             command: (e) => { navigateToUrl(e, '/register') }
+        },
+        {
+            label: 'R2',
+            command: (e) => { navigateToUrl(e, '/register2') }
         },
         {
             //label: 'Settings',
@@ -101,7 +105,7 @@ export function SidebarComponent2 ( props: ThemeSwitcher ) {
     const sidebarShadowStyle = {
 
         shadow: {
-            "box-shadow": "0 1px 3px rgba(0, 0, 0, 0.3)",
+            "boxShadow": "0px 1px 3px rgba(0, 0, 0, 0.3)",
         },
     }
 

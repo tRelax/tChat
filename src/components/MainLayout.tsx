@@ -1,7 +1,7 @@
 import {ThemeSwitcher} from "./ThemeSwitcher";
 import React from "react";
 import {PossibleRoutes} from "../common/PossibleRoutes";
-import {SidebarComponent2} from "./SidebarComponent2";
+import {SidebarComponent} from "./SidebarComponent";
 
 export function MainLayout ( props: ThemeSwitcher ) {
     const { lightState, setLightState } = props;
@@ -9,7 +9,7 @@ export function MainLayout ( props: ThemeSwitcher ) {
     return (
         <div className="flex h-full w-full">
             <div className="flex" style={{"width": "10%"}}>
-                <SidebarComponent2 lightState={lightState} setLightState={setLightState}/>
+                <SidebarComponent lightState={lightState} setLightState={setLightState}/>
             </div>
 
             <PossibleRoutes className="flex" style={{"width": "100%"}}/>

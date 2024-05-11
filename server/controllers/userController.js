@@ -13,16 +13,22 @@ const registerUser = async (req,res) =>{
     try {
         const {username, password} = req.body
 
-        if(!username || !password)
+        if(!username || !password){
+            console.log("All fields are required...");
             return res.status(400).json("All fields are required...");
+        }
 
         let user = await userModel.findOne({ username });
 
-        if(user)
+        if(user){
+            console.log("Username already exists...");
             return res.status(400).json("Username already exists...");
+        }
 
-        if(!validator.isStrongPassword(password, {minSymbols: 0}))
+        if(!validator.isStrongPassword(password, {minSymbols: 0})){
+            console.log("Password must have at least 1 lowercase letter, 1 uppercase letter and 1 number");
             return res.status(400).json("Password must have at least 1 lowercase letter, 1 uppercase letter and 1 number");
+        }
 
         user = new userModel({username, password});
 

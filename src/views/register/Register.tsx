@@ -1,17 +1,21 @@
-import { Button } from "primereact/button";
-import { Divider } from 'primereact/divider';
-import React, { useState } from "react";
-import { FieldMetaState, Form } from 'react-final-form';
+import {Button} from "primereact/button";
+import {Divider} from 'primereact/divider';
+import React, {useContext, useState} from "react";
+import {FieldMetaState, Form} from 'react-final-form';
 
-import '../assets/Register.css';
-import { FormSuccessDialog } from "./dialogs/FormSuccessDialog";
-import { PasswordComponent } from "./form-components/PasswordComponent";
-import { Username } from "./form-components/Username";
-import { useNavigate } from "react-router-dom";
-import { FormApi } from 'final-form';
-import { formDataProps } from "../common/types";
+import '../../assets/Register.css';
+import {FormSuccessDialog} from "../../components/dialogs/FormSuccessDialog";
+import {PasswordComponent} from "../../components/form-components/PasswordComponent";
+import {Username} from "../../components/form-components/Username";
+import {useNavigate} from "react-router-dom";
+import {FormApi} from 'final-form';
+import {formDataProps} from "../../common/types";
+import {AuthContext} from "../../context/AuthContext";
 
 export function Register() {
+
+    const { registerInfo, updateRegisterInfo } = useContext(AuthContext);
+
     const navigate = useNavigate();
     const [showMessage, setShowMessage] = useState(false);
 
@@ -80,7 +84,9 @@ export function Register() {
                             <form onSubmit={handleSubmit} className="p-fluid">
                                 <Username
                                     isFormFieldValid={isFormFieldValid}
-                                    getFormErrorMessage={getFormErrorMessage}/>
+                                    getFormErrorMessage={getFormErrorMessage}
+                                    onChange={(e) => updateRegisterInfo({...registerInfo, username: e.target.value})}
+                                />
                                 <PasswordComponent
                                     isFormFieldValid={isFormFieldValid}
                                     getFormErrorMessage={getFormErrorMessage}
