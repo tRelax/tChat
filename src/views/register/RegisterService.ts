@@ -3,5 +3,5 @@ import {AxiosResponse} from "axios";
 
 
 export async function registerApi(username: string, password: string): Promise<AxiosResponse> {
-    return await api.post('/register', {username, password});
+    return await api.post('/users/register', {username, password});
 }
