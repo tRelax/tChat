@@ -84,6 +84,10 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
             command: (e) => { navigateToUrl(e, '/register') }
         },
         {
+            label: 'Chat',
+            command: (e) => { navigateToUrl(e, '/chat') }
+        },
+        {
             //label: 'Settings',
             icon: 'pi pi-cog'
         },
