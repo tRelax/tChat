@@ -5,13 +5,22 @@ export function Home (){
     const auth = useAuth();
     return (
         <Panel className="mt-3" header={<b>Welcome!</b>} style={{width:"50%", margin: "auto"}}>
-            <h3>Welcome to the tChat!</h3>
+            <h3>
+                Welcome to tChat {" "}
+                {
+                    auth.authInfo.authenticated && (
+                        <i>
+                            {auth.authInfo.info?.username}!
+                        </i>
+                    )
+                }
+            </h3>
             <p className="m-0">
                 <b>
                     {
                         auth.authInfo.authenticated && (
                             <i>
-                                Welcome to tChat {auth.authInfo.info?.username}!
+                                Click the server and start chatting!
                             </i>
                         )
                     }

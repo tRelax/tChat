@@ -9,11 +9,14 @@ import '../assets/Sidebar.css'
 import useAuth from "../context/AuthContext";
 import {CustomToastContainer} from "./ToastComponent";
 import {toast} from "react-toastify";
+import useChat from "../context/ChatConext";
+import UserChat from "./UserChat";
 
 export function SidebarComponent ( props: ThemeSwitcher ) {
     const auth = useAuth();
     const navigate = useNavigate();
     const { lightState, setLightState } = props;
+    const { userChats, isUserChatsLoading, updateCurrentChat} = useChat();
 
     const servers = [
         {
@@ -121,35 +124,54 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
     return (
         <div style={sidebarShadowStyle.shadow} className="p-sidebar flex flex-column h-full justify-content-between p-3">
             <CustomToastContainer />
-            <div className="flex flex-column align-items-center">
-                <div className='mb-1' key={"homepage-div"}>
-                    <Avatar
-                        key={"homepage-avatar"}
-                        className='homepage'
-                        icon='pi pi-home'
-                        size="large"
-                        shape="circle"
-                        onClick= { () => {navigate('/'); }}/>
+            <div>
+                <div className="flex flex-column align-items-center">
+                    <div className='mb-1' key={"homepage-div"}>
+                        <Avatar
+                            key={"homepage-avatar"}
+                            className='homepage'
+                            icon='pi pi-home'
+                            size="large"
+                            shape="circle"
+                            onClick= { () => {navigate('/'); }}/>
+                    </div>
                 </div>
+                <hr className="border-top-1 border-none surface-border" />
             </div>
 
             <div className="sticky flex flex-column align-items-center">
-                {servers.map( (server) => {
+                {userChats?.map((chat, index) => {
                     return (
-                        <React.Fragment key = {`server-${server.id}-fragment`}>
-                            <div className='mb-1'>
-                                <Tooltip target={`.${server.name}-${server.id}`} />
+                        <React.Fragment key = {`server-${index}-fragment`} >
+                            <div className='mb-2' onClick={() => updateCurrentChat(chat)}>
+                                <Tooltip target={`.server-${index}`} />
                                 <Avatar
-                                    className={`${server.name}-${server.id}`}
-                                    icon={server.icon}
+                                    className={`server-${index}`}
+                                    icon="pi pi-server"
                                     size="large"
                                     shape="circle"
-                                    data-pr-tooltip={server.name}
+                                    data-pr-tooltip={`Server ${index}`}
                                     data-pr-position="right"/>
                             </div>
                         </React.Fragment>
                     );
                 })}
+                {/*{servers.map( (server) => {*/}
+                {/*    return (*/}
+                {/*        <React.Fragment key = {`server-${server.id}-fragment`}>*/}
+                {/*            <div className='mb-1'>*/}
+                {/*                <Tooltip target={`.${server.name}-${server.id}`} />*/}
+                {/*                <Avatar*/}
+                {/*                    className={`${server.name}-${server.id}`}*/}
+                {/*                    icon={server.icon}*/}
+                {/*                    size="large"*/}
+                {/*                    shape="circle"*/}
+                {/*                    data-pr-tooltip={server.name}*/}
+                {/*                    data-pr-position="right"/>*/}
+                {/*            </div>*/}
+                {/*        </React.Fragment>*/}
+                {/*    );*/}
+                {/*})}*/}
             </div>
             <div>
                 <div className="mt-auto">
@@ -173,7 +195,7 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
                             icon="pi pi-user"
                             image="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png"
                             shape="circle"
-                            data-pr-tooltip="Username"
+                            data-pr-tooltip={auth.authInfo.info?.username}
                             data-pr-position="right"
                         />
                     </a>

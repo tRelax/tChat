@@ -84,6 +84,19 @@ const findUser = async (req,res) => {
     }
 }
 
+const findUserLocally = async (userId) => {
+    try {
+        const user = await userModel.findById(userId);
+        if (!user) {
+            return "user not found"; // Handle case where user is not found
+        }
+        return user;
+    } catch (err) {
+        console.error(err);
+        throw new Error("Error finding user"); // Re-throw error for handling in getMessages
+    }
+};
+
 const getUsers = async (req,res) => {
     try {
         const users = await userModel.find();
@@ -95,4 +108,4 @@ const getUsers = async (req,res) => {
     }
 }
 
-module.exports = {registerUser, loginUser, findUser, getUsers};
+module.exports = {registerUser, loginUser, findUser, getUsers, findUserLocally};

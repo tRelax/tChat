@@ -12,7 +12,10 @@ export function MainLayout ( props: ThemeSwitcher ) {
     return (
         <ChatContextProvider userInfo={auth.authInfo.info}>
             <div className="flex h-full w-full">
-                <div className="flex" style={{"width": "10%"}}>
+                <div
+                    className="flex"
+                    // style={{"width": "10%"}}
+                >
                     <SidebarComponent lightState={lightState} setLightState={setLightState}/>
                 </div>
 
