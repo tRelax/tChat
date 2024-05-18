@@ -10,7 +10,7 @@ import {formDataProps} from "../../common/types";
 import {toast} from "react-toastify";
 import {AxiosError} from "axios";
 import {loginApi} from "./LoginService";
-import useAuth from "../../context/AuthContext";
+import useAuth from "../../context/Auth/AuthContext";
 import {CustomToastContainer} from "../../components/ToastComponent";
 
 const schema = Yup.object().shape({

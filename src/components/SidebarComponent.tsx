@@ -6,10 +6,10 @@ import {Tooltip} from "primereact/tooltip";
 import {MenuItem, MenuItemCommandEvent} from "primereact/menuitem";
 import {Avatar} from "primereact/avatar";
 import '../assets/Sidebar.css'
-import useAuth from "../context/AuthContext";
+import useAuth from "../context/Auth/AuthContext";
 import {CustomToastContainer} from "./ToastComponent";
 import {toast} from "react-toastify";
-import useChat from "../context/ChatConext";
+import useChat from "../context/Chat/ChatConext";
 import UserChat from "./UserChat";
 
 export function SidebarComponent ( props: ThemeSwitcher ) {

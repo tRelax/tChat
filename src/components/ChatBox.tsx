@@ -1,5 +1,5 @@
-import useAuth from "../context/AuthContext";
-import useChat from "../context/ChatConext";
+import useAuth from "../context/Auth/AuthContext";
+import useChat from "../context/Chat/ChatConext";
 import {Home} from "../views/Home";
 import {Avatar} from "primereact/avatar";
 import React, {useEffect, useRef, useState} from "react";

@@ -1,5 +1,5 @@
-import useChat from "../../context/ChatConext";
-import useAuth from "../../context/AuthContext";
+import useChat from "../../context/Chat/ChatConext";
+import useAuth from "../../context/Auth/AuthContext";
 import UserChat from "../../components/UserChat";
 import ChatBox from "../../components/ChatBox";
 

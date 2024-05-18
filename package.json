@@ -24,6 +24,7 @@
     "react-jwt": "^1.2.1",
     "react-router-dom": "^6.23.0",
     "react-toastify": "^10.0.5",
+    "socket.io-client": "^4.7.5",
     "universal-cookie": "^7.1.4",
     "yup": "^1.4.0"
   },

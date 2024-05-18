@@ -5,7 +5,7 @@ import {PossibleRoutes} from './common/PossibleRoutes';
 import {SidebarComponent} from './components/navbar-components/SidebarComponent';
 import {SidebarComponent2} from "./components/SidebarComponent";
 import {MainLayout} from "./components/MainLayout";
-import {AuthContextProvider} from "./context/AuthContext";
+import {AuthContextProvider} from "./context/Auth/AuthContext";
 
 function App() {
   const [lightState, setLightState] = useState<boolean>(() => {
