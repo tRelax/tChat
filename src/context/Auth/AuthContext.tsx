@@ -1,7 +1,7 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import {AuthenticationInfo} from "./AuthenticationInfo";
 import Cookies from "universal-cookie";
-import api from "../common/api";
+import api from "../../common/api";
 import {extractJwtData, getAuthenticationInfoFromJwt} from "./AuthUtils";
 
 export type AuthContextType = {
