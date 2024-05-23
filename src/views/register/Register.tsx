@@ -13,6 +13,7 @@ import {CustomToastContainer} from "../../components/ToastComponent";
 import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../../assets/Register.css';
+import useAuth from "../../context/Auth/AuthContext";
 
 
 interface RegisterSubmitForm extends formDataProps {
@@ -30,12 +31,18 @@ const schema = Yup.object().shape({
 });
 
 const Register = () => {
+    const auth = useAuth();
     const navigate = useNavigate();
 
     const {register, handleSubmit, formState: {errors}}
         = useForm<RegisterSubmitForm>({resolver: yupResolver(schema)});
 
     const messages = useRef<Messages>();
+
+    if(auth.authInfo.authenticated){
+        console.log("already logged in!");
+        navigate("/");
+    }
 
     const onSubmit = async (data: RegisterSubmitForm) => {
         try {
@@ -70,7 +77,7 @@ const Register = () => {
                         <a style={{textDecoration: "underline", color:"blueviolet"}} onClick={() => {navigate('/login')}}>Log in</a>
                     </p>
                     <Messages ref={messages} />
-                    <form onSubmit={handleSubmit(onSubmit)}>
+                    <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
                         <div className="mt-2 flex flex-column gap-4">
                             <FormInputText
                                 name='username'

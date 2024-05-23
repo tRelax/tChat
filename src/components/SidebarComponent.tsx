@@ -1,5 +1,5 @@
 import {ThemeSwitcher} from "./ThemeSwitcher";
-import React, {useRef} from "react";
+import React, {useRef, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {Menu} from "primereact/menu";
 import {Tooltip} from "primereact/tooltip";
@@ -10,104 +10,44 @@ import useAuth from "../context/Auth/AuthContext";
 import {CustomToastContainer} from "./ToastComponent";
 import {toast} from "react-toastify";
 import useChat from "../context/Chat/ChatConext";
-import UserChat from "./UserChat";
+import {Dialog} from "primereact/dialog";
+import {InputText} from "primereact/inputtext";
+import {Button} from "primereact/button";
 
 export function SidebarComponent ( props: ThemeSwitcher ) {
+    const [visible, setVisible] = useState(false);
+    const [serverId, setServerId] = useState('');
     const auth = useAuth();
     const navigate = useNavigate();
     const { lightState, setLightState } = props;
-    const { userChats, isUserChatsLoading, updateCurrentChat} = useChat();
-
-    const servers = [
-        {
-            id:1,
-            name:"name1",
-            icon:"pi pi-server"
-        },
-        {
-            id:2,
-            name:"name2",
-            icon:"pi pi-server"
-        },
-        {
-            id:3,
-            name:"name3",
-            icon:"pi pi-server"
-        },
-        {
-            id:4,
-            name:"name4",
-            icon:"pi pi-server"
-        },
-        {
-            id:5,
-            name:"name5",
-            icon:"pi pi-server"
-        },
-        {
-            id:6,
-            name:"name6",
-            icon:"pi pi-server"
-        },
-        {
-            id:7,
-            name:"name7",
-            icon:"pi pi-server"
-        },
-        {
-            id:8,
-            name:"name8",
-            icon:"pi pi-server"
-        },
-        {
-            id:9,
-            name:"name9",
-            icon:"pi pi-server"
-        },
-        {
-            id:10,
-            name:"name10",
-            icon:"pi pi-server"
-        },
-        {
-            id:11,
-            name:"name11",
-            icon:"pi pi-server"
-        }
-    ]
+    const { userChats, addUserToServer, updateCurrentChat} = useChat();
 
     const menu = useRef<Menu>();
     const items : MenuItem[] = [
-        {
-            label: 'Login',
-            command: (e) => { navigateToUrl(e, '/login') }
-        },
-        {
-            label: 'Register',
-            command: (e) => { navigateToUrl(e, '/register') }
-        },
-        {
-            label: 'Chat',
-            command: (e) => { navigateToUrl(e, '/chat') }
-        },
         {
             //label: 'Settings',
             icon: 'pi pi-cog'
         },
         {
-            label: 'Logout',
+            // label: 'Logout',
             icon: 'pi pi-power-off',
             command: () => { logOut() }
         }
     ];
 
     const logOut = () => {
+        updateCurrentChat(undefined);
         auth.setToken(undefined);
         toast.success('Logged out successfully!', {
             autoClose: 2000,
-            onClose: () => window.location.href = '/',
+            onClose: (e) => navigateToUrl(e, '/login'),
         });
     };
+
+    const addServer = () => {
+        console.log("adding new server..")
+
+    }
 
     const navigateToUrl = (e: MenuItemCommandEvent, url: string) => {
         e?.originalEvent?.preventDefault();
@@ -115,7 +55,6 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
     };
 
     const sidebarShadowStyle = {
-
         shadow: {
             "boxShadow": "0px 1px 3px rgba(0, 0, 0, 0.3)",
         },
@@ -124,6 +63,25 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
     return (
         <div style={sidebarShadowStyle.shadow} className="p-sidebar flex flex-column h-full justify-content-between p-3">
             <CustomToastContainer />
+            <Dialog
+                visible={visible}
+                modal
+                onHide={() => setVisible(false)}
+                content={({ hide }) => (
+                    <div className="flex flex-column px-6 py-4 gap-2 p-sidebar" style={{ borderRadius: '4px'}}>
+                        <div className="inline-flex flex-column gap-2">
+                            <label htmlFor="code" className="font-semibold">
+                                Enter invite code
+                            </label>
+                            <InputText id="code" label="Code" className="bg-white-alpha-10 p-3" value={serverId} onChange={(e) => setServerId(e.target.value)}/>
+                        </div>
+                        <div className="flex align-items-center gap-2">
+                            <Button label="Join" outlined onClick={() => addUserToServer(auth.authInfo.info!.id, serverId)} className="p-2 w-full hover:bg-white-alpha-10"/>
+                            <Button label="Cancel" outlined onClick={(e) => hide(e)} className="p-2 w-full hover:bg-white-alpha-10"/>
+                        </div>
+                    </div>
+                )}
+            ></Dialog>
             <div>
                 <div className="flex flex-column align-items-center">
                     <div className='mb-1' key={"homepage-div"}>
@@ -133,7 +91,20 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
                             icon='pi pi-home'
                             size="large"
                             shape="circle"
-                            onClick= { () => {navigate('/'); }}/>
+                            onClick= { () => {updateCurrentChat(undefined);navigate('/'); }}/>
+                    </div>
+                </div>
+                <div className="flex flex-column align-items-center">
+                    <div className='mb-1' key={"homepage-div"}>
+                        <Tooltip target=".add-server-avatar" />
+                        <Avatar
+                            className="add-server-avatar"
+                            icon='pi pi-plus'
+                            size="large"
+                            shape="circle"
+                            data-pr-tooltip="Add a Server"
+                            data-pr-position="right"
+                            onClick={() => setVisible(true)}/>
                     </div>
                 </div>
                 <hr className="border-top-1 border-none surface-border" />
@@ -156,22 +127,6 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
                         </React.Fragment>
                     );
                 })}
-                {/*{servers.map( (server) => {*/}
-                {/*    return (*/}
-                {/*        <React.Fragment key = {`server-${server.id}-fragment`}>*/}
-                {/*            <div className='mb-1'>*/}
-                {/*                <Tooltip target={`.${server.name}-${server.id}`} />*/}
-                {/*                <Avatar*/}
-                {/*                    className={`${server.name}-${server.id}`}*/}
-                {/*                    icon={server.icon}*/}
-                {/*                    size="large"*/}
-                {/*                    shape="circle"*/}
-                {/*                    data-pr-tooltip={server.name}*/}
-                {/*                    data-pr-position="right"/>*/}
-                {/*            </div>*/}
-                {/*        </React.Fragment>*/}
-                {/*    );*/}
-                {/*})}*/}
             </div>
             <div>
                 <div className="mt-auto">
@@ -208,70 +163,3 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
     )
 
 }
-
-// <div className="flex h-full w-full">
-//     <div className="flex" style={{"width": "10%"}}>
-//         <div className="flex flex-column h-full justify-content-between p-3">
-//             <div className="flex flex-column align-items-center">
-//                 <div className='mb-1' key={"homepage-div"}>
-//                     <Avatar
-//                         key={"homepage-avatar"}
-//                         className='homepage'
-//                         icon='pi pi-home'
-//                         size="large"
-//                         shape="circle"
-//                         onClick= { () => {navigate('/'); }}/>
-//                 </div>
-//                 {servers.map( (server) => {
-//                     return (
-//                         <React.Fragment key = {`server-${server.id}-fragment`}>
-//                             <div className='mb-1'>
-//                                 <Tooltip target={`.${server.name}-${server.id}`} />
-//                                 <Avatar
-//                                     className={`${server.name}-${server.id}`}
-//                                     icon={server.icon}
-//                                     size="large"
-//                                     shape="circle"
-//                                     data-pr-tooltip={server.name}
-//                                     data-pr-position="right"/>
-//                             </div>
-//                         </React.Fragment>
-//                     );
-//                 })}
-//             </div>
-//             <div>
-//                 <div className="mt-auto">
-//                     <hr className="border-top-1 border-none surface-border" />
-//                     <Menu
-//                         model={items}
-//                         popup
-//                         ref={menu}
-//                         id="popup_menu_right"
-//                         popupAlignment="left"
-//                         style={{"width":"4em"}}
-//
-//                     />
-//                     <a className="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple"
-//                        onClick={(event) => menu.current?.toggle(event)}
-//                        aria-controls="popup_menu_right"
-//                        aria-haspopup>
-//                         <Tooltip target=".profile" />
-//                         <Avatar
-//                             className="profile select-none"
-//                             icon="pi pi-user"
-//                             image="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png"
-//                             shape="circle"
-//                             data-pr-tooltip="Username"
-//                             data-pr-position="right"
-//                         />
-//                     </a>
-//
-//                     <hr className="border-top-1 border-none surface-border" />
-//                     <ThemeSwitcher lightState={lightState} setLightState={setLightState} />
-//                 </div>
-//             </div>
-//         </div>
-//     </div>
-//
-//     <PossibleRoutes className="flex" style={{"width": "100%"}}/>
-// </div>

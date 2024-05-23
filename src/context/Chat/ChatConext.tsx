@@ -1,5 +1,5 @@
 import {createContext, useCallback, useContext, useEffect, useState} from "react";
-import {getUserChatsApi} from "../../views/chat/ChatService";
+import {addUserToChatApi, getUserChatsApi} from "../../views/chat/ChatService";
 import {getMessagesApi, sendMessageApi} from "../../views/chat/MessageService";
 import {MessageInfo} from "../../views/chat/MessageInfo";
 import {ChatInfo} from "../../views/chat/ChatInfo";
@@ -8,15 +8,16 @@ import chat from "../../views/chat/Chat";
 
 
 export type ChatContextType = {
-    userChats: [],
+    userChats: ChatInfo[],
     isUserChatsLoading: boolean,
     userChatsError: string,
     currentChat?: ChatInfo,
-    updateCurrentChat: (chat:ChatInfo) => void,
+    updateCurrentChat: (chat?:ChatInfo) => void,
     messages: MessageInfo[],
     isMessagesLoading: boolean,
     messagesError: string,
     sendTextMessage: (currentChatId: string, senderId: string, textMessage: string, setTextMessage: (textMessage:string)=>void) => void,
+    addUserToServer: (userId: string, chatId: string) => void,
 }
 
 export const ChatContext = createContext<ChatContextType>(
@@ -30,6 +31,7 @@ export const ChatContext = createContext<ChatContextType>(
         isMessagesLoading: false,
         messagesError: "",
         sendTextMessage: () => {},
+        addUserToServer: () => {},
     });
 
 const useChat = () => {
@@ -41,7 +43,7 @@ const useChat = () => {
 };
 
 export const ChatContextProvider = ({children, user}) => {
-    const [userChats, setUserChats] = useState(null);
+    const [userChats, setUserChats] = useState<ChatInfo[]>(null);
     const [isUserChatsLoading, setIsUserChatsLoading] = useState(false);
     const [userChatsError, setUserChatsError] = useState(null);
     const [currentChat, setCurrentChat] = useState(null);
@@ -69,7 +71,7 @@ export const ChatContextProvider = ({children, user}) => {
 
     //get online users
     useEffect(()=>{
-        if(socket === null) return;
+        if(socket === null || !user?.authenticated) return;
         //console.log(socket, userInfo?.id)
         socket.emit("addNewUser", user?.info.id)
         socket.on("getOnlineUsers", (res) => {
@@ -88,14 +90,14 @@ export const ChatContextProvider = ({children, user}) => {
 
     //send message to room
     useEffect(()=>{
-        if(socket === null) return;
+        if(socket === null || !user?.authenticated) return;
 
         socket.emit("sendMessageToRoom", {...newMessage})
     },[newMessage])
 
     //recieve message and add user to room
     useEffect(()=>{
-        if(socket === null) return;
+        if(socket === null || !user?.authenticated) return;
 
         socket.on("getMessage", res => {
             console.log("recieveing message on", user.info.id);
@@ -114,7 +116,7 @@ export const ChatContextProvider = ({children, user}) => {
 
     useEffect(() =>{
         const getUserChats = async () => {
-            //console.log(userInfo)
+            if(!user?.authenticated) return;
             if(user?.info.id){
                 try {
                     setUserChatsError(null);
@@ -139,8 +141,6 @@ export const ChatContextProvider = ({children, user}) => {
     const sendTextMessage = useCallback((currentChatId, senderId, textMessage, setTextMessage)=>{
         if (!textMessage) return console.log("Type something...")
 
-        console.log("Here")
-
         const sendMessage = async () => {
             try {
                 setSendTextMessageError(null);
@@ -156,6 +156,22 @@ export const ChatContextProvider = ({children, user}) => {
         };
 
         void sendMessage();
+    }, [])
+
+    const addUserToServer = useCallback((userId, serverCode)=>{
+        if (!serverCode) return console.log("input code...")
+
+        const addServer = async () => {
+            try {
+                console.log(userId, serverCode)
+                const response = await addUserToChatApi(userId, serverCode);
+                setUserChats((prev) => [...prev, response?.data]);
+            } catch (e) {
+                console.log("ERR: ", e.response?.data);
+            }
+        };
+
+        void addServer();
     }, [])
 
     useEffect(() => {
@@ -184,6 +200,7 @@ export const ChatContextProvider = ({children, user}) => {
         isMessagesLoading: isMessagesLoading,
         messagesError: messagesError,
         sendTextMessage: sendTextMessage,
+        addUserToServer: addUserToServer
     }}>
         {children}
     </ChatContext.Provider>

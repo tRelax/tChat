@@ -1,9 +1,6 @@
 import {useEffect, useState} from 'react'
 
 import {BrowserRouter} from 'react-router-dom';
-import {PossibleRoutes} from './common/PossibleRoutes';
-import {SidebarComponent} from './components/navbar-components/SidebarComponent';
-import {SidebarComponent2} from "./components/SidebarComponent";
 import {MainLayout} from "./components/MainLayout";
 import {AuthContextProvider} from "./context/Auth/AuthContext";
 
@@ -38,7 +35,7 @@ function App() {
     <>
       <BrowserRouter>
         <AuthContextProvider>
-          <MainLayout lightState={lightState} setLightState={setLightState}/>
+            <MainLayout lightState={lightState} setLightState={setLightState}/>
         </AuthContextProvider>
         {/*<SidebarComponent lightState={lightState} setLightState={setLightState}/>*/}
       </BrowserRouter>

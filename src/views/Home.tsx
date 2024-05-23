@@ -1,7 +1,10 @@
 import { Panel } from "primereact/panel";
 import useAuth from "../context/Auth/AuthContext";
+import React from "react";
+import {useNavigate} from "react-router-dom";
 
 export function Home (){
+    const navigate = useNavigate();
     const auth = useAuth();
     return (
         <Panel className="mt-3" header={<b>Welcome!</b>} style={{width:"50%", margin: "auto"}}>
@@ -27,7 +30,7 @@ export function Home (){
                     {
                         !auth.authInfo.authenticated && (
                             <i>
-                                You are not logged in, please log in to use the website!
+                                You are not logged in, please <a className="cursor-pointer" style={{color: "blueviolet"}} onClick={() => {navigate('/login')}}>log in</a> to use the website!
                             </i>
                         )
                     }

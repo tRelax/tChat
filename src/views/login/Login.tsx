@@ -12,6 +12,8 @@ import {AxiosError} from "axios";
 import {loginApi} from "./LoginService";
 import useAuth from "../../context/Auth/AuthContext";
 import {CustomToastContainer} from "../../components/ToastComponent";
+import useChat from "../../context/Chat/ChatConext";
+import {MenuItemCommandEvent} from "primereact/menuitem";
 
 const schema = Yup.object().shape({
     username: Yup.string().required("Required!"),
@@ -27,18 +29,24 @@ const Login = () => {
 
     const messages = useRef<Messages>();
 
+    if(auth.authInfo.authenticated){
+        console.log("already logged in!");
+        navigate("/");
+    }
+
     const onSubmit = async (data: formDataProps) => {
         try {
             const response = await loginApi(data.username, data.password);
 
-            console.log(response?.data);
-
+            //console.log(response?.data);
             auth.setToken(response.data);
 
+            console.log("trying to toast!");
             toast.success('Login successful!', {
                 autoClose: 2000,
-                onClose: () => window.location.href = '/',
+                // onClose: () => window.location.href = '/',
             });
+            navigate('/');
 
         } catch (e) {
             handleRequestFailure(e);
@@ -58,12 +66,11 @@ const Login = () => {
         <div className="form-demo">
             <CustomToastContainer />
             <Messages ref={messages} />
-            <p>Welcome {auth.authInfo.info?.username}</p>
             <div className="flex justify-content-center">
                 <div className="card">
                     <h2 className="text-center">Login</h2>
                     <Messages ref={messages} />
-                    <form onSubmit={handleSubmit(onSubmit)}>
+                    <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
                         <div className="mt-2 flex flex-column gap-4">
                             <FormInputText
                                 name='username'

@@ -30,7 +30,7 @@ const ChatBox = () => {
     return (
         <div className="chat-box flex flex-column align-items-start">
             <div className="chat-box-skeleton p-sidebar flex-10">
-                <h2 className="chat-box-title">{currentChat._id}</h2>
+                <h2 className="chat-box-title">{currentChat.name ? currentChat.name : currentChat._id}</h2>
             </div>
 
             <div ref={messagesRef} className="flex flex-column chat-box-skeleton flex-1 sticky">
