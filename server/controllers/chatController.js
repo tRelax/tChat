@@ -1,5 +1,5 @@
 const chatModel = require("../models/chatModel");
-
+const uuid = require("uuid");
 
 const createChat = async (req, res) => {
     const {firstId, secondId} = req.body;
@@ -27,9 +27,13 @@ const createEmptyChat = async (req, res) => {
     const {name, ownerId} = req.body;
 
     try {
+        if(!name) return res.status(500).json("Name must be specified.");
+        if(!ownerId) return res.status(500).json("No ownerId.");
+        const code = uuid.v4().split("-").pop()
         const newChat = new chatModel({
             name,
-            members: [ownerId]
+            members: [ownerId],
+            code: code,
         });
         const response = await newChat.save();
         res.status(200).json(response);
@@ -73,7 +77,8 @@ const addNewUserToChat = async(req, res) => {
     const {userId, chatId} = req.body;
 
     try {
-        const chat = await chatModel.findById(chatId);
+        const chat = await chatModel.findOne({code: chatId});
+        if(!chat) return res.status(500).json("Invalid code")
         const alreadyMember = chat?.members.find(user => user === userId);
         if(alreadyMember) return res.status(500).json("Already in chat!")
         chat?.members.push(userId);
