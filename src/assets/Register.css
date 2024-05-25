@@ -11,22 +11,17 @@
 
 .chat-box {
     width: 100%;
-    height: 100%;
-    margin: 0 auto auto auto ;
-    padding: 0%;
     background-color: transparent;
 }
 
 .chat-box-skeleton {
     width: 100%;
-    height: auto;
 }
 
 .chat-box-title {
     width: 100%;
-    margin: 0px auto auto auto;
-    padding: 1% 0px;
-    border: 0px;
+    margin: 0 auto auto;
+    padding: 1% 0;
     border-bottom: 1px solid;
     border-color: darkgray;
     text-align: center;
@@ -34,11 +29,9 @@
 
 .chat-box-sending {
     width: 100%;
-    margin: 0px auto auto auto;
-    padding: 1% 0px;
+    margin: 0 auto auto auto;
+    padding: 1% 0;
     text-align: center;
-    border: 0px;
-    border-color: darkgray;
 }
 
 .chat-box-message {
