@@ -10,17 +10,16 @@ import useAuth from "../context/Auth/AuthContext";
 import {CustomToastContainer} from "./ToastComponent";
 import {toast} from "react-toastify";
 import useChat from "../context/Chat/ChatConext";
-import {Dialog} from "primereact/dialog";
-import {InputText} from "primereact/inputtext";
-import {Button} from "primereact/button";
+import AddChatDialog from "./AddChatDialog";
+import CreateChatDialog from "./CreateChatDialog";
 
 export function SidebarComponent ( props: ThemeSwitcher ) {
-    const [visible, setVisible] = useState(false);
-    const [serverId, setServerId] = useState('');
+    const [visibleAddChat, setVisibleAddChat] = useState(false);
+    const [visibleCreateChat, setVisibleCreateChat] = useState(false);
     const auth = useAuth();
     const navigate = useNavigate();
     const { lightState, setLightState } = props;
-    const { userChats, addUserToServer, updateCurrentChat} = useChat();
+    const { userChats, updateCurrentChat} = useChat();
 
     const menu = useRef<Menu>();
     const items : MenuItem[] = [
@@ -44,44 +43,16 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
         });
     };
 
-    const addServer = () => {
-        console.log("adding new server..")
-
-    }
-
     const navigateToUrl = (e: MenuItemCommandEvent, url: string) => {
         e?.originalEvent?.preventDefault();
         navigate(url);
     };
-
-    const sidebarShadowStyle = {
-        shadow: {
-            "boxShadow": "0px 1px 3px rgba(0, 0, 0, 0.3)",
-        },
-    }
-
+    //pi-folder-plus
     return (
-        <div style={sidebarShadowStyle.shadow} className="p-sidebar flex flex-column h-full justify-content-between p-3">
+        <div className="p-sidebar flex flex-column h-full justify-content-between p-3">
             <CustomToastContainer />
-            <Dialog
-                visible={visible}
-                modal
-                onHide={() => setVisible(false)}
-                content={({ hide }) => (
-                    <div className="flex flex-column px-6 py-4 gap-2 p-sidebar" style={{ borderRadius: '4px'}}>
-                        <div className="inline-flex flex-column gap-2">
-                            <label htmlFor="code" className="font-semibold">
-                                Enter invite code
-                            </label>
-                            <InputText id="code" label="Code" className="bg-white-alpha-10 p-3" value={serverId} onChange={(e) => setServerId(e.target.value)}/>
-                        </div>
-                        <div className="flex align-items-center gap-2">
-                            <Button label="Join" outlined onClick={() => addUserToServer(auth.authInfo.info!.id, serverId)} className="p-2 w-full hover:bg-white-alpha-10"/>
-                            <Button label="Cancel" outlined onClick={(e) => hide(e)} className="p-2 w-full hover:bg-white-alpha-10"/>
-                        </div>
-                    </div>
-                )}
-            ></Dialog>
+            <AddChatDialog userId={auth.authInfo.info!.id} visible={visibleAddChat} setVisible={setVisibleAddChat}/>
+            <CreateChatDialog userId={auth.authInfo.info!.id} visible={visibleCreateChat} setVisible={setVisibleCreateChat}/>
             <div>
                 <div className="flex flex-column align-items-center">
                     <div className='mb-1' key={"homepage-div"}>
@@ -95,7 +66,7 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
                     </div>
                 </div>
                 <div className="flex flex-column align-items-center">
-                    <div className='mb-1' key={"homepage-div"}>
+                    <div className='mb-1'>
                         <Tooltip target=".add-server-avatar" />
                         <Avatar
                             className="add-server-avatar"
@@ -104,7 +75,20 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
                             shape="circle"
                             data-pr-tooltip="Add a Server"
                             data-pr-position="right"
-                            onClick={() => setVisible(true)}/>
+                            onClick={() => setVisibleAddChat(true)}/>
+                    </div>
+                </div>
+                <div className="flex flex-column align-items-center">
+                    <div className='mb-1'>
+                        <Tooltip target=".create-server-avatar" />
+                        <Avatar
+                            className="create-server-avatar"
+                            icon='pi pi-folder-plus'
+                            size="large"
+                            shape="circle"
+                            data-pr-tooltip="Create new server"
+                            data-pr-position="right"
+                            onClick={() => setVisibleCreateChat(true)}/>
                     </div>
                 </div>
                 <hr className="border-top-1 border-none surface-border" />
@@ -121,7 +105,7 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
                                     icon="pi pi-server"
                                     size="large"
                                     shape="circle"
-                                    data-pr-tooltip={`Server ${index}`}
+                                    data-pr-tooltip={chat.name ? chat.name : "error_name"}
                                     data-pr-position="right"/>
                             </div>
                         </React.Fragment>

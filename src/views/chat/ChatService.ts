@@ -8,3 +8,7 @@ export async function getUserChatsApi(userId: string): Promise<AxiosResponse> {
 export async function addUserToChatApi(userId: string, chatId: string): Promise<AxiosResponse> {
     return await api.put("/chats/addUserToChat", {userId, chatId});
 }
+
+export async function createChatApi(ownerId: string, name: string): Promise<AxiosResponse> {
+    return await api.post("/chats/newChat", {ownerId, name});
+}
