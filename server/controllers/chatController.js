@@ -9,7 +9,7 @@ const createChat = async (req, res) => {
             members: {$all: [firstId, secondId]}
         });
 
-        if(chat) return res.status(200).json(chat);
+        if (chat) return res.status(200).json(chat);
 
         const newChat = new chatModel({
             members: [firstId, secondId]
@@ -17,34 +17,39 @@ const createChat = async (req, res) => {
         const response = await newChat.save();
         res.status(200).json(response);
         console.log("SUCCESS! createChat");
-    } catch (error){
+    } catch (error) {
         console.log(error);
         res.status(500).json(error);
     }
 }
 
 const createEmptyChat = async (req, res) => {
-    const {name, ownerId} = req.body;
-
+    const {name, ownerId, imageId} = req.body;
     try {
-        if(!name) return res.status(500).json("Name must be specified.");
-        if(!ownerId) return res.status(500).json("No ownerId.");
+        if (!name) return res.status(500).json("Name must be specified.");
+        if (!ownerId) return res.status(500).json("No ownerId.");
+
+        console.log("imageID:", imageId)
+
         const code = uuid.v4().split("-").pop()
         const newChat = new chatModel({
             name,
+            imageId,
             members: [ownerId],
             code: code,
         });
         const response = await newChat.save();
         res.status(200).json(response);
         console.log("SUCCESS! createEmptyChat");
-    } catch (error){
+    } catch (error) {
         console.log(error);
         res.status(500).json(error);
     }
 }
-const findUserChats = async(req, res) => {
+const findUserChats = async (req, res) => {
     const userId = req.params.userId;
+
+    if (userId !== req.userId) return res.status(401).json("Unauthorized access");
 
     try {
         const chats = await chatModel.find({
@@ -58,7 +63,7 @@ const findUserChats = async(req, res) => {
     }
 }
 
-const findChat = async(req, res) => {
+const findChat = async (req, res) => {
     const {firstId, secondId} = req.params;
 
     try {
@@ -73,19 +78,19 @@ const findChat = async(req, res) => {
     }
 }
 
-const addNewUserToChat = async(req, res) => {
+const addNewUserToChat = async (req, res) => {
     const {userId, chatId} = req.body;
 
     try {
         const chat = await chatModel.findOne({code: chatId});
-        if(!chat) return res.status(500).json("Invalid code")
+        if (!chat) return res.status(500).json("Invalid code")
         const alreadyMember = chat?.members.find(user => user === userId);
-        if(alreadyMember) return res.status(500).json("Already in chat!")
+        if (alreadyMember) return res.status(500).json("Already in chat!")
         chat?.members.push(userId);
         const response = await chat?.save();
         res.status(200).json(response);
         console.log("SUCCESS! addNewUserToChat");
-    } catch (error){
+    } catch (error) {
         console.log(error);
         res.status(500).json(error);
     }

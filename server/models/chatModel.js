@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const chatSchema = new mongoose.Schema(
     {
         name: String,
+        imageId: String,
         members: Array,
         code: String,
     },
@@ -11,6 +12,6 @@ const chatSchema = new mongoose.Schema(
     }
 );
 
-const chatModel = mongoose.model("Chat",chatSchema);
+const chatModel = mongoose.model("Chat", chatSchema);
 
 module.exports = chatModel;
