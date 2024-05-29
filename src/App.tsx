@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react'
 
 import {BrowserRouter} from 'react-router-dom';
-import {MainLayout} from "./components/MainLayout";
+import {MainLayout} from "./views/MainLayout";
 import {AuthContextProvider} from "./context/Auth/AuthContext";
 
 function App() {
