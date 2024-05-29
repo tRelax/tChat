@@ -10,19 +10,21 @@ import useAuth from "../context/Auth/AuthContext";
 import {CustomToastContainer} from "./ToastComponent";
 import {toast} from "react-toastify";
 import useChat from "../context/Chat/ChatConext";
-import AddChatDialog from "./AddChatDialog";
-import CreateChatDialog from "./CreateChatDialog";
+import AddChatDialog from "./dialogs/AddChatDialog";
+import CreateChatDialog from "./dialogs/CreateChatDialog";
+import SettingsDialog from "./dialogs/SettingsDialog";
 
-export function SidebarComponent ( props: ThemeSwitcher ) {
+export function SidebarComponent(props: ThemeSwitcher) {
     const [visibleAddChat, setVisibleAddChat] = useState(false);
     const [visibleCreateChat, setVisibleCreateChat] = useState(false);
+    const [visibleSettings, setVisibleSettings] = useState(false);
     const auth = useAuth();
     const navigate = useNavigate();
-    const { lightState, setLightState } = props;
-    const { userChats, updateCurrentChat} = useChat();
+    const {lightState, setLightState} = props;
+    const {userChats, updateCurrentChat} = useChat();
 
     const menu = useRef<Menu>();
-    const items : MenuItem[] = [
+    const items: MenuItem[] = [
         {
             //label: 'Settings',
             icon: 'pi pi-cog'
@@ -30,7 +32,9 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
         {
             // label: 'Logout',
             icon: 'pi pi-power-off',
-            command: () => { logOut() }
+            command: () => {
+                logOut()
+            }
         }
     ];
 
@@ -50,9 +54,11 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
     //pi-folder-plus
     return (
         <div className="p-sidebar flex flex-column h-full justify-content-between p-3">
-            <CustomToastContainer />
+            <CustomToastContainer/>
             <AddChatDialog userId={auth.authInfo.info!.id} visible={visibleAddChat} setVisible={setVisibleAddChat}/>
-            <CreateChatDialog userId={auth.authInfo.info!.id} visible={visibleCreateChat} setVisible={setVisibleCreateChat}/>
+            <CreateChatDialog userId={auth.authInfo.info!.id} visible={visibleCreateChat}
+                              setVisible={setVisibleCreateChat}/>
+            <SettingsDialog userId={auth.authInfo.info!.id} visible={visibleSettings} setVisible={setVisibleSettings}/>
             <div>
                 <div className="flex flex-column align-items-center">
                     <div className='mb-1' key={"homepage-div"}>
@@ -62,12 +68,15 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
                             icon='pi pi-home'
                             size="large"
                             shape="circle"
-                            onClick= { () => {updateCurrentChat(undefined);navigate('/'); }}/>
+                            onClick={() => {
+                                updateCurrentChat(undefined);
+                                navigate('/');
+                            }}/>
                     </div>
                 </div>
                 <div className="flex flex-column align-items-center">
                     <div className='mb-1'>
-                        <Tooltip target=".add-server-avatar" />
+                        <Tooltip target=".add-server-avatar"/>
                         <Avatar
                             className="add-server-avatar"
                             icon='pi pi-plus'
@@ -80,7 +89,7 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
                 </div>
                 <div className="flex flex-column align-items-center">
                     <div className='mb-1'>
-                        <Tooltip target=".create-server-avatar" />
+                        <Tooltip target=".create-server-avatar"/>
                         <Avatar
                             className="create-server-avatar"
                             icon='pi pi-folder-plus'
@@ -91,18 +100,20 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
                             onClick={() => setVisibleCreateChat(true)}/>
                     </div>
                 </div>
-                <hr className="border-top-1 border-none surface-border" />
+                <hr className="border-top-1 border-none surface-border"/>
             </div>
 
             <div className="sticky flex flex-column align-items-center">
                 {userChats?.map((chat, index) => {
+                    console.log(chat.imageId);
                     return (
-                        <React.Fragment key = {`server-${index}-fragment`} >
+                        <React.Fragment key={`server-${index}-fragment`}>
                             <div className='mb-2' onClick={() => updateCurrentChat(chat)}>
-                                <Tooltip target={`.server-${index}`} />
+                                <Tooltip target={`.server-${index}`}/>
                                 <Avatar
+                                    image={chat.imageId ? `${import.meta.env.VITE_SERVICE_API_URL}/images/${chat.imageId}` : ""}
                                     className={`server-${index}`}
-                                    icon="pi pi-server"
+                                    icon={chat.imageId ? "" : "pi pi-server"}
                                     size="large"
                                     shape="circle"
                                     data-pr-tooltip={chat.name ? chat.name : "error_name"}
@@ -114,21 +125,13 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
             </div>
             <div>
                 <div className="mt-auto">
-                    <hr className="border-top-1 border-none surface-border" />
-                    <Menu
-                        model={items}
-                        popup
-                        ref={menu}
-                        id="popup_menu_right"
-                        popupAlignment="left"
-                        style={{"width":"4em"}}
-
-                    />
+                    <hr className="border-top-1 border-none surface-border"/>
                     <a className="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple"
-                       onClick={(event) => menu.current?.toggle(event)}
+                        // onClick={(event) => menu.current?.toggle(event)}
                        aria-controls="popup_menu_right"
-                       aria-haspopup>
-                        <Tooltip target=".profile" />
+                       aria-haspopup
+                       onClick={() => setVisibleSettings(true)}>
+                        <Tooltip target=".profile"/>
                         <Avatar
                             className="profile select-none"
                             icon="pi pi-user"
@@ -139,8 +142,8 @@ export function SidebarComponent ( props: ThemeSwitcher ) {
                         />
                     </a>
 
-                    <hr className="border-top-1 border-none surface-border" />
-                    <ThemeSwitcher lightState={lightState} setLightState={setLightState} />
+                    <hr className="border-top-1 border-none surface-border"/>
+                    <ThemeSwitcher lightState={lightState} setLightState={setLightState}/>
                 </div>
             </div>
         </div>
