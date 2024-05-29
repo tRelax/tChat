@@ -1,11 +1,10 @@
 import {InputText} from 'primereact/inputtext';
-import {FieldError, UseFormRegister} from 'react-hook-form';
 import React, {useState} from "react";
 import {Dialog} from "primereact/dialog";
 import {Button} from "primereact/button";
-import {addUserToChatApi, createChatApi} from "../views/chat/ChatService";
+import {addUserToChatApi} from "../../views/chat/ChatService";
 import {toast} from "react-toastify";
-import useChat from "../context/Chat/ChatConext";
+import useChat from "../../context/Chat/ChatConext";
 
 export type ChatDialogProps = {
     userId: string,
@@ -15,17 +14,18 @@ export type ChatDialogProps = {
 
 const AddChatDialog = (props: ChatDialogProps) => {
     const { setUserChats } = useChat();
-    const [chatName, setChatName] = useState('');
+    const [serverId, setServerId] = useState('');
 
-    const addServer = async (chatName: string) => {
+    const addServer = async (serverId: string) => {
         try {
-            const response = await createChatApi(props.userId, chatName);
+            const response = await addUserToChatApi(props.userId, serverId);
             setUserChats((prev) => [...prev, response?.data]);
-            toast.success('Created new server!', {
+            toast.success('Added new server!', {
                 autoClose: 2000,
+                // onClose: () => props.setVisible(false),
             });
             props.setVisible(false);
-            setChatName("");
+            setServerId("");
         } catch (e) {
             const message = typeof e.response?.data === "string" ? e.response?.data : "Invalid code";
             toast.error(message, {autoClose: 2000});
@@ -34,7 +34,7 @@ const AddChatDialog = (props: ChatDialogProps) => {
 
     const closeDialog = () => {
         props.setVisible(false);
-        setChatName("");
+        setServerId("");
     }
 
     return (
@@ -47,12 +47,12 @@ const AddChatDialog = (props: ChatDialogProps) => {
 
                     <div className="inline-flex flex-column gap-2">
                         <label htmlFor="code" className="font-semibold">
-                            Enter server name
+                            Enter invite code
                         </label>
-                        <InputText id="code" label="Code" className="bg-white-alpha-10 p-3" value={chatName} onChange={(e) => setChatName(e.target.value)}/>
+                        <InputText id="code" label="Code" className="bg-white-alpha-10 p-3" value={serverId} onChange={(e) => setServerId(e.target.value)}/>
                     </div>
                     <div className="flex align-items-center gap-2">
-                        <Button label="Create" outlined onClick={() => addServer(chatName)} className="p-2 w-full hover:bg-white-alpha-10"/>
+                        <Button label="Join" outlined onClick={() => addServer(serverId)} className="p-2 w-full hover:bg-white-alpha-10"/>
                         <Button label="Cancel" outlined onClick={(e) => hide(e)} className="p-2 w-full hover:bg-white-alpha-10"/>
                     </div>
                 </div>
