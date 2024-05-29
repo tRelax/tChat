@@ -4,6 +4,9 @@ import {getMessagesApi, sendMessageApi} from "../../views/chat/MessageService";
 import {MessageInfo} from "../../views/chat/MessageInfo";
 import {ChatInfo} from "../../views/chat/ChatInfo";
 import {io} from "socket.io-client";
+import * as Buffer from "buffer";
+import {getImage} from "../../views/chat/ImageService";
+import {c} from "vite/dist/node/types.d-aGj9QkWt";
 
 
 export type ChatContextType = {
@@ -12,25 +15,28 @@ export type ChatContextType = {
     isUserChatsLoading: boolean,
     userChatsError: string,
     currentChat?: ChatInfo,
-    updateCurrentChat: (chat?:ChatInfo) => void,
+    updateCurrentChat: (chat?: ChatInfo) => void,
     messages: MessageInfo[],
     isMessagesLoading: boolean,
     messagesError: string,
-    sendTextMessage: (currentChatId: string, senderId: string, textMessage: string, setTextMessage: (textMessage:string)=>void) => void,
+    sendTextMessage: (currentChatId: string, senderId: string, textMessage: string, setTextMessage: (textMessage: string) => void) => void,
 }
 
 export const ChatContext = createContext<ChatContextType>(
     {
         userChats: [],
-        setUserChats: () => {},
+        setUserChats: () => {
+        },
         isUserChatsLoading: false,
         userChatsError: "",
         currentChat: undefined,
-        updateCurrentChat: () => {},
+        updateCurrentChat: () => {
+        },
         messages: [],
         isMessagesLoading: false,
         messagesError: "",
-        sendTextMessage: () => {},
+        sendTextMessage: () => {
+        },
     });
 
 const useChat = () => {
@@ -56,8 +62,8 @@ export const ChatContextProvider = ({children, user}) => {
 
     //initial socket
     useEffect(() => {
-        if(!user.authenticated) return;
-        const newSocket = io(import.meta.env.VITE_SOCKET_SERVER_URL, { transports : ['websocket'] });
+        if (!user.authenticated) return;
+        const newSocket = io(import.meta.env.VITE_SOCKET_SERVER_URL, {transports: ['websocket']});
         //console.log(newSocket)
         setSocket(newSocket);
 
@@ -67,30 +73,30 @@ export const ChatContextProvider = ({children, user}) => {
     }, [user])
 
     //get online users
-    useEffect(()=>{
-        if(socket === null || !user?.authenticated) return;
+    useEffect(() => {
+        if (socket === null || !user?.authenticated) return;
         //console.log(socket, userInfo?.id)
         socket.emit("addNewUser", user?.info.id)
         socket.on("getOnlineUsers", (res) => {
             setOnlineUsers(res);
         })
-    },[socket])
+    }, [socket])
 
     //send message to room
-    useEffect(()=>{
-        if(socket === null || !user?.authenticated) return;
+    useEffect(() => {
+        if (socket === null || !user?.authenticated) return;
 
         socket.emit("sendMessageToRoom", {...newMessage})
-    },[newMessage])
+    }, [newMessage])
 
     //recieve message and add user to room
-    useEffect(()=>{
-        if(socket === null || !user?.authenticated) return;
+    useEffect(() => {
+        if (socket === null || !user?.authenticated) return;
 
         socket.on("getMessage", res => {
             console.log("recieveing message on", user.info.id);
             console.log("INFO:", currentChat?._id, res.chatId);
-            if(currentChat?._id !== res.chatId) return;
+            if (currentChat?._id !== res.chatId) return;
 
             setMessages((prev) => [...prev, res]);
         });
@@ -100,19 +106,18 @@ export const ChatContextProvider = ({children, user}) => {
         return () => {
             socket.off("getMessage");
         }
-    },[socket, currentChat])
+    }, [socket, currentChat])
 
-    useEffect(() =>{
+    useEffect(() => {
         const getUserChats = async () => {
-            if(!user?.authenticated) return;
-            if(user?.info.id){
+            if (!user?.authenticated) return;
+            if (user?.info.id) {
                 try {
                     setUserChatsError(null);
                     setIsUserChatsLoading(true);
                     const response = await getUserChatsApi(user?.info.id);
                     setIsUserChatsLoading(false);
-                    //console.log(response?.data);
-                    setUserChats(response?.data)
+                    setUserChats(response?.data);
                 } catch (e) {
                     setUserChatsError(e.response?.data);
                     console.log("ERR: ", e.response?.data);
@@ -122,11 +127,11 @@ export const ChatContextProvider = ({children, user}) => {
         getUserChats();
     }, [user])
 
-    const updateCurrentChat = useCallback((chat)=>{
+    const updateCurrentChat = useCallback((chat) => {
         setCurrentChat(chat);
     }, [])
 
-    const sendTextMessage = useCallback((currentChatId, senderId, textMessage, setTextMessage)=>{
+    const sendTextMessage = useCallback((currentChatId, senderId, textMessage, setTextMessage) => {
         if (!textMessage) return console.log("Type something...")
 
         const sendMessage = async () => {
@@ -148,6 +153,7 @@ export const ChatContextProvider = ({children, user}) => {
 
     useEffect(() => {
         const getMessages = async () => {
+            if (!user?.authenticated) return;
             try {
                 setIsMessagesLoading(true);
                 setMessagesError(null);
