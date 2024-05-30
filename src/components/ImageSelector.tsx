@@ -1,4 +1,4 @@
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {Button} from "primereact/button";
 import {Tooltip} from "primereact/tooltip";
 import {FileUpload} from "primereact/fileupload";
@@ -14,6 +14,11 @@ const ImageSelector = (props: ImageSelectorProps) => {
     const toast = useRef(null);
     const [totalSize, setTotalSize] = useState(0);
     const fileUploadRef = useRef(null);
+
+    //initial setting file to null in case of before creating server and it being in memory
+    useEffect(() => {
+        props.setFile(null);
+    }, [])
 
     const onTemplateSelect = (e) => {
         let _totalSize = 0;
