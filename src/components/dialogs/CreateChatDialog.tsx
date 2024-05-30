@@ -1,13 +1,11 @@
 import {InputText} from 'primereact/inputtext';
-import {FieldError, UseFormRegister} from 'react-hook-form';
 import React, {useState} from "react";
 import {Dialog} from "primereact/dialog";
 import {Button} from "primereact/button";
-import {addUserToChatApi, createChatApi} from "../../views/chat/ChatService";
+import {createChatApi} from "../../views/chat/ChatService";
 import {toast} from "react-toastify";
 import useChat from "../../context/Chat/ChatConext";
 import ImageSelector from "../ImageSelector";
-import {Avatar} from "primereact/avatar";
 import {ImageInfo} from "../../views/chat/ImageInfo";
 import {uploadImage} from "../../views/chat/ImageService";
 
@@ -21,8 +19,22 @@ const AddChatDialog = (props: ChatDialogProps) => {
     const {setUserChats} = useChat();
     const [chatName, setChatName] = useState('');
     const [selectedFile, setSelectedFile] = useState(null);
+    const requiredFields = [chatName, selectedFile];
+
+    function validateRequiredFields(fields) {
+        for (const field of fields) {
+            if (!field) {
+                toast.error("Server must have name and image selected!", {
+                    autoClose: 2000,
+                });
+                return false;
+            }
+        }
+        return true;
+    }
 
     const prepareImageData = (chatName: string) => {
+        if (!validateRequiredFields(requiredFields)) return;
         const reader = new FileReader();
         reader.onloadend = () => {
             const encodedImage = reader.result;
@@ -44,6 +56,7 @@ const AddChatDialog = (props: ChatDialogProps) => {
                 autoClose: 2000,
             });
             props.setVisible(false);
+            setSelectedFile(null);
             setChatName("");
         } catch (e) {
             const message = typeof e.response?.data === "string" ? e.response?.data : "Invalid code";
