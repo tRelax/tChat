@@ -1,7 +1,6 @@
 import {ThemeSwitcher} from "./ThemeSwitcher";
 import React, {useRef, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {Menu} from "primereact/menu";
 import {Tooltip} from "primereact/tooltip";
 import {MenuItem, MenuItemCommandEvent} from "primereact/menuitem";
 import {Avatar} from "primereact/avatar";
@@ -13,44 +12,59 @@ import useChat from "../context/Chat/ChatConext";
 import AddChatDialog from "./dialogs/AddChatDialog";
 import CreateChatDialog from "./dialogs/CreateChatDialog";
 import SettingsDialog from "./dialogs/SettingsDialog";
+import {ContextMenu} from "primereact/contextmenu";
+import {ChatInfo} from "../views/chat/ChatInfo";
+import {getUserChatsApi, removeUserFromChatApi} from "../views/chat/ChatService";
 
 export function SidebarComponent(props: ThemeSwitcher) {
     const [visibleAddChat, setVisibleAddChat] = useState(false);
     const [visibleCreateChat, setVisibleCreateChat] = useState(false);
     const [visibleSettings, setVisibleSettings] = useState(false);
+    const [selectedChatForDeleting, setSelectedChatForDeleting] = useState<ChatInfo>(null);
     const auth = useAuth();
     const navigate = useNavigate();
     const {lightState, setLightState} = props;
-    const {userChats, updateCurrentChat} = useChat();
+    const {userChats, updateCurrentChat, setUserChats, currentChat} = useChat();
+    const contextMenuRef = useRef(null);
+    const tooltipRef = useRef(null);
 
-    const menu = useRef<Menu>();
     const items: MenuItem[] = [
         {
-            //label: 'Settings',
-            icon: 'pi pi-cog'
-        },
-        {
-            // label: 'Logout',
+            label: 'Leave server',
             icon: 'pi pi-power-off',
             command: () => {
-                logOut()
+                removeUserFromChat().then(null);
             }
         }
     ];
 
-    const logOut = () => {
-        updateCurrentChat(undefined);
-        auth.setToken(undefined);
-        toast.success('Logged out successfully!', {
-            autoClose: 2000,
-            onClose: (e) => navigateToUrl(e, '/login'),
-        });
-    };
+    const rightClick = (e: MouseEvent<HTMLDivElement>, chat: ChatInfo) => {
+        // cm.current.show(e);
+        if (contextMenuRef.current) {
+            contextMenuRef.current.show(e);
+            tooltipRef.current.hide(e);
+            setSelectedChatForDeleting(chat);
+        }
+    }
 
-    const navigateToUrl = (e: MenuItemCommandEvent, url: string) => {
-        e?.originalEvent?.preventDefault();
-        navigate(url);
-    };
+    const removeUserFromChat = async () => {
+        try {
+            if (currentChat?._id === selectedChatForDeleting._id) {
+                navigate("/");
+                updateCurrentChat(undefined)
+            }
+            await removeUserFromChatApi(auth.authInfo.info!.id, selectedChatForDeleting._id);
+            toast.success('Left server!', {
+                autoClose: 2000,
+            });
+            const response = await getUserChatsApi(auth.authInfo.info!.id)
+            setUserChats(response?.data);
+        } catch (e) {
+            const message = typeof e.response?.data === "string" ? e.response?.data : "ERR";
+            toast.error(message, {autoClose: 2000});
+        }
+    }
+
     //pi-folder-plus
     return (
         <div className="p-sidebar flex flex-column h-full justify-content-between p-3">
@@ -105,11 +119,12 @@ export function SidebarComponent(props: ThemeSwitcher) {
 
             <div className="sticky flex flex-column align-items-center">
                 {userChats?.map((chat, index) => {
-                    console.log(chat.imageId);
                     return (
                         <React.Fragment key={`server-${index}-fragment`}>
-                            <div className='mb-2' onClick={() => updateCurrentChat(chat)}>
-                                <Tooltip target={`.server-${index}`}/>
+                            <div className='mb-2' onClick={() => updateCurrentChat(chat)}
+                                 onContextMenu={(e) => rightClick(e, chat)}>
+                                <ContextMenu model={items} ref={contextMenuRef}/>
+                                <Tooltip target={`.server-${index}`} ref={tooltipRef}/>
                                 <Avatar
                                     image={chat.imageId ? `${import.meta.env.VITE_SERVICE_API_URL}/images/${chat.imageId}` : ""}
                                     className={`server-${index}`}

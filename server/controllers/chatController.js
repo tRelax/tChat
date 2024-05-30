@@ -96,6 +96,33 @@ const addNewUserToChat = async (req, res) => {
     }
 }
 
-module.exports = {createChat, createEmptyChat, findUserChats, findChat, addNewUserToChat};
+const removeUserFromChat = async (req, res) => {
+    const {userId, chatId} = req.body;
+
+    if (userId !== req.userId) return res.status(401).json("Unauthorized access");
+
+    try {
+        await chatModel.updateOne({_id: chatId}, {
+            $pull: {
+                members: userId,
+            },
+        });
+
+        const chat = await chatModel.findById(chatId);
+
+        if (chat && chat.members.length === 0) {
+            await chatModel.deleteOne({_id: chatId});
+            console.log("[ ", chatId, " ] server deleted, no users in server");
+        }
+
+        res.status(200).json("Successfully removed from chat");
+        console.log("SUCCESS! removeUserFromChat");
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(error);
+    }
+}
+
+module.exports = {createChat, createEmptyChat, findUserChats, findChat, addNewUserToChat, removeUserFromChat};
 
 
