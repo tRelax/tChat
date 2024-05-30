@@ -9,8 +9,6 @@ const uploadImage = async (req, res) => {
             data: serverImage.data,
         }
 
-        console.log(imageData)
-
         const newImage = new imageModel(imageData);
         const response = await newImage.save();
         res.status(200).json(response);
