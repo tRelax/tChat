@@ -40,8 +40,6 @@ const ChatBox = () => {
         handleScrollToBottom()
     }, [messages])
 
-    // console.log("current chat : ", currentChat)
-
     if (!currentChat) return <Home/>
 
     if (isMessagesLoading && auth.authInfo.authenticated) return <p>Loading messages</p>
@@ -74,7 +72,7 @@ const ChatBox = () => {
                                 size="large"
                                 className="profile select-none"
                                 icon="pi pi-user"
-                                // image="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png"
+                                image={`${import.meta.env.VITE_SERVICE_API_URL}/images/${message?.senderInfo.senderImageId}`}
                                 shape="circle"
                             />
                             <div

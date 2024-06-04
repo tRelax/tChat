@@ -13,8 +13,8 @@ import AddChatDialog from "./dialogs/AddChatDialog";
 import CreateChatDialog from "./dialogs/CreateChatDialog";
 import SettingsDialog from "./dialogs/SettingsDialog";
 import {ContextMenu} from "primereact/contextmenu";
-import {ChatInfo} from "../views/chat/ChatInfo";
-import {getUserChatsApi, removeUserFromChatApi} from "../views/chat/ChatService";
+import {ChatInfo} from "../common/types/ChatInfo";
+import {getUserChatsApi, removeUserFromChatApi} from "../services/ChatService";
 
 export function SidebarComponent(props: ThemeSwitcher) {
     const [visibleAddChat, setVisibleAddChat] = useState(false);
@@ -150,7 +150,7 @@ export function SidebarComponent(props: ThemeSwitcher) {
                         <Avatar
                             className="profile select-none"
                             icon="pi pi-user"
-                            image="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png"
+                            image={auth.authInfo.info?.imageId ? `${import.meta.env.VITE_SERVICE_API_URL}/images/${auth.authInfo.info?.imageId}` : ""}
                             shape="circle"
                             data-pr-tooltip={auth.authInfo.info?.username}
                             data-pr-position="right"
