@@ -7,7 +7,8 @@ import {Toast} from "primereact/toast";
 
 export type ImageSelectorProps = {
     file: File,
-    setFile: (value: (((prevState: null) => null) | null)) => void
+    setFile: (value: (((prevState: null) => null) | null)) => void,
+    title: string,
 }
 
 const ImageSelector = (props: ImageSelectorProps) => {
@@ -43,18 +44,11 @@ const ImageSelector = (props: ImageSelectorProps) => {
 
     const headerTemplate = (options) => {
         const {className, chooseButton, cancelButton} = options;
-        const value = totalSize / 10000;
-        const formatedValue = fileUploadRef && fileUploadRef.current ? fileUploadRef.current.formatSize(totalSize) : '0 B';
 
         return (
             <div className={className} style={{backgroundColor: 'transparent', display: 'flex', alignItems: 'center'}}>
                 {chooseButton}
                 {cancelButton}
-                <div className="flex align-items-center gap-3 ml-auto">
-                    <span>{formatedValue} / 1 MB</span>
-                    <ProgressBar value={value} showValue={false}
-                                 style={{width: '8rem', height: '0.8rem'}}></ProgressBar>
-                </div>
             </div>
         );
     };
@@ -108,12 +102,11 @@ const ImageSelector = (props: ImageSelectorProps) => {
 
             <Tooltip target=".custom-choose-btn" content="Choose" position="bottom"/>
             <Tooltip target=".custom-cancel-btn" content="Clear" position="bottom"/>
-            <div className="font-semibold mb-2">Select image for server</div>
+            <div className="font-semibold mb-2">{props.title}</div>
             <FileUpload ref={fileUploadRef}
-                        name="demo[]"
                         url="/api/upload"
                         accept="image/*"
-                        maxFileSize={1000000}
+                        maxFileSize={1048576}
                         onSelect={onTemplateSelect} onError={onTemplateClear}
                         onClear={onTemplateClear}
                         headerTemplate={headerTemplate} itemTemplate={itemTemplate} emptyTemplate={emptyTemplate}
