@@ -1,16 +1,17 @@
 const mongoose = require("mongoose");
 
 const messageSchema = new mongoose.Schema({
-    chatId: String,
-    senderInfo: {
-        senderId: String,
-        senderUsername: String,
+        chatId: String,
+        senderInfo: {
+            senderId: String,
+            senderUsername: String,
+            senderImageId: String,
+        },
+        text: String,
     },
-    text: String,
-},
-{
-    timestamps: true,
-})
+    {
+        timestamps: true,
+    })
 
 const messageModel = mongoose.model("Message", messageSchema);
 
