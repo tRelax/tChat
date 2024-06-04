@@ -1,5 +1,5 @@
 import {createContext, useContext, useEffect, useState} from "react";
-import {AuthenticationInfo} from "./AuthenticationInfo";
+import {AuthenticationInfo} from "../../common/types/AuthenticationInfo";
 import Cookies from "universal-cookie";
 import api from "../../common/api";
 import {extractJwtData, getAuthenticationInfoFromJwt} from "./AuthUtils";
@@ -11,7 +11,8 @@ export type AuthContextType = {
 
 export const AuthContext = createContext<AuthContextType>({
     authInfo: {authenticated: false},
-    setToken: () => {}
+    setToken: () => {
+    }
 });
 
 const useAuth = () => {
@@ -22,7 +23,7 @@ const useAuth = () => {
     return val;
 };
 
-export const AuthContextProvider = ({ children }) => {
+export const AuthContextProvider = ({children}) => {
     const cookies = new Cookies();
     const [token, setToken] = useState<string | undefined | null>(() => {
         const token = cookies.get('tchat-jwt-token') as string | null;
@@ -59,9 +60,9 @@ export const AuthContextProvider = ({ children }) => {
     };
 
     return (
-    <AuthContext.Provider value={{authInfo: authInfo, setToken: setTokenIntercept}}>
-        {children}
-    </AuthContext.Provider>)
+        <AuthContext.Provider value={{authInfo: authInfo, setToken: setTokenIntercept}}>
+            {children}
+        </AuthContext.Provider>)
 }
 
 export default useAuth;

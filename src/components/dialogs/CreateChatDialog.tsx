@@ -2,12 +2,12 @@ import {InputText} from 'primereact/inputtext';
 import React, {useState} from "react";
 import {Dialog} from "primereact/dialog";
 import {Button} from "primereact/button";
-import {createChatApi} from "../../views/chat/ChatService";
+import {createChatApi} from "../../services/ChatService";
 import {toast} from "react-toastify";
 import useChat from "../../context/Chat/ChatConext";
 import ImageSelector from "../ImageSelector";
-import {ImageInfo} from "../../views/chat/ImageInfo";
-import {uploadImage} from "../../views/chat/ImageService";
+import {ImageInfo} from "../../common/types/ImageInfo";
+import {uploadImage} from "../../services/ImageService";
 
 export type ChatDialogProps = {
     userId: string,
@@ -74,7 +74,7 @@ const AddChatDialog = (props: ChatDialogProps) => {
             draggable={false}
             resizable={false}
             header="Create new server"
-            className="w-4"
+            className="w-5"
             visible={props.visible}
             modal
             onHide={() => closeDialog()}>
@@ -86,10 +86,9 @@ const AddChatDialog = (props: ChatDialogProps) => {
                     <InputText id="code" label="Code" className="bg-white-alpha-10 p-3" value={chatName}
                                onChange={(e) => setChatName(e.target.value)}/>
                 </div>
-                <ImageSelector file={selectedFile} setFile={setSelectedFile}/>
+                <ImageSelector file={selectedFile} setFile={setSelectedFile} title={"Select image for server"}/>
                 <div className="flex w-full justify-content-end">
-                    <Button label="Create" outlined onClick={() => prepareImageData(chatName)}
-                            className="w-3" style={{textAlign: "center"}}/>
+                    <Button label="Create" outlined onClick={() => prepareImageData(chatName)}/>
                 </div>
             </div>
         </Dialog>

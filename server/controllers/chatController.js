@@ -29,8 +29,6 @@ const createEmptyChat = async (req, res) => {
         if (!name) return res.status(500).json("Name must be specified.");
         if (!ownerId) return res.status(500).json("No ownerId.");
 
-        console.log("imageID:", imageId)
-
         const code = uuid.v4().split("-").pop()
         const newChat = new chatModel({
             name,

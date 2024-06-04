@@ -1,11 +1,11 @@
 import {createContext, useCallback, useContext, useEffect, useState} from "react";
-import {addUserToChatApi, getUserChatsApi} from "../../views/chat/ChatService";
-import {getMessagesApi, sendMessageApi} from "../../views/chat/MessageService";
-import {MessageInfo} from "../../views/chat/MessageInfo";
-import {ChatInfo} from "../../views/chat/ChatInfo";
+import {addUserToChatApi, getUserChatsApi} from "../../services/ChatService";
+import {getMessagesApi, sendMessageApi} from "../../services/MessageService";
+import {MessageInfo} from "../../common/types/MessageInfo";
+import {ChatInfo} from "../../common/types/ChatInfo";
 import {io} from "socket.io-client";
 import * as Buffer from "buffer";
-import {getImage} from "../../views/chat/ImageService";
+import {getImage} from "../../services/ImageService";
 import {c} from "vite/dist/node/types.d-aGj9QkWt";
 
 

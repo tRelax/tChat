@@ -1,18 +1,16 @@
-const { Server } = require("socket.io");
+const {Server} = require("socket.io");
 require("dotenv").config();
 
 const PORT = process.env.PORT;
 const CLIENT_URL = process.env.CLIENTURL;
 
 const io = new Server({
-    cors:CLIENT_URL
+    cors: CLIENT_URL
 });
 
 let onlineUsers = [];
 
 io.on("connection", (socket) => {
-    //console.log("new connection", socket.id);
-
     socket.on("addNewUser", (userId) => {
         !onlineUsers.some(user => user.userId === userId) &&
         onlineUsers.push({
@@ -20,7 +18,6 @@ io.on("connection", (socket) => {
             socketId: socket.id,
             room: "",
         })
-        //console.log("online users", onlineUsers);
 
         io.emit("getOnlineUsers", onlineUsers);
     });
@@ -29,11 +26,9 @@ io.on("connection", (socket) => {
 
         const user = onlineUsers.find(user => user.userId === userId.userId)
 
-        if(user && chatId.chatId){
+        if (user && chatId.chatId) {
             user.room = chatId.chatId;
             socket.join(user.room)
-            // console.log(`user ${user.userId} joined room ${user.room}`);
-            // console.log(onlineUsers);
         }
     })
 
@@ -41,9 +36,8 @@ io.on("connection", (socket) => {
         console.log(message)
 
         const user = onlineUsers.find(user => user.userId === message.recipientId)
-        //console.log(user)
 
-        if(user){
+        if (user) {
             io.to(user.socketId).emit("getMessage", message);
         }
     })
@@ -54,7 +48,7 @@ io.on("connection", (socket) => {
         const user = onlineUsers.find(user => user.userId === message.senderInfo.senderId);
         console.log(user)
 
-        if(user){
+        if (user) {
             console.log("sending to room", user.room)
             io.to(user.room).emit("getMessage", message);
         }
