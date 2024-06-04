@@ -1,6 +1,6 @@
 import {AxiosResponse} from "axios";
-import api from "../../common/api";
-import {MessageInfo} from "./MessageInfo";
+import api from "../common/api";
+import {MessageInfo} from "../common/types/MessageInfo";
 
 export async function getMessagesApi(chatId: string): Promise<AxiosResponse> {
     return await api.get(`/messages/${chatId}`);

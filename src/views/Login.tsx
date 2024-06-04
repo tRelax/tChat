@@ -2,17 +2,17 @@ import {Button} from 'primereact/button';
 import {useForm} from 'react-hook-form';
 import * as Yup from 'yup';
 import {yupResolver} from '@hookform/resolvers/yup';
-import FormInputText from "../../components/FormInputText";
+import FormInputText from "../components/FormInputText";
 import {Messages} from "primereact/messages";
 import React, {useRef} from "react";
 import {useNavigate} from "react-router-dom";
-import {formDataProps} from "../../common/types";
+import {formDataProps} from "../common/types";
 import {toast} from "react-toastify";
 import {AxiosError} from "axios";
-import {loginApi} from "./LoginService";
-import useAuth from "../../context/Auth/AuthContext";
-import {CustomToastContainer} from "../../components/ToastComponent";
-import useChat from "../../context/Chat/ChatConext";
+import {loginApi} from "../services/LoginService";
+import useAuth from "../context/Auth/AuthContext";
+import {CustomToastContainer} from "../components/ToastComponent";
+import useChat from "../context/Chat/ChatConext";
 import {MenuItemCommandEvent} from "primereact/menuitem";
 
 const schema = Yup.object().shape({
@@ -29,7 +29,7 @@ const Login = () => {
 
     const messages = useRef<Messages>();
 
-    if(auth.authInfo.authenticated){
+    if (auth.authInfo.authenticated) {
         console.log("already logged in!");
         navigate("/");
     }
@@ -52,6 +52,7 @@ const Login = () => {
             handleRequestFailure(e);
         }
     }
+
     function handleRequestFailure(e: AxiosError) {
         const msg = e.response?.data;
 
@@ -64,12 +65,12 @@ const Login = () => {
 
     return (
         <div className="form-demo">
-            <CustomToastContainer />
-            <Messages ref={messages} />
+            <CustomToastContainer/>
+            <Messages ref={messages}/>
             <div className="flex justify-content-center">
                 <div className="card">
                     <h2 className="text-center">Login</h2>
-                    <Messages ref={messages} />
+                    <Messages ref={messages}/>
                     <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
                         <div className="mt-2 flex flex-column gap-4">
                             <FormInputText
@@ -82,12 +83,14 @@ const Login = () => {
                                 errors={errors.username}
                             />
                             <FormInputText name='password' type={'password'} placeholder={'password'} label={'password'}
-                                           required register={register} />
-                            <Button type="submit" label="Login" />
+                                           required register={register}/>
+                            <Button type="submit" label="Login"/>
                         </div>
                     </form>
                     <p>Need an account?{" "}
-                        <a className="cursor-pointer" style={{color: "blueviolet"}} onClick={() => {navigate('/register')}}>Register</a>
+                        <a className="cursor-pointer" style={{color: "blueviolet"}} onClick={() => {
+                            navigate('/register')
+                        }}>Register</a>
                     </p>
                 </div>
             </div>

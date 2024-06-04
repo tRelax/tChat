@@ -4,6 +4,7 @@ export type MessageInfo = {
     senderInfo: {
         senderId: string,
         senderUsername: string,
+        senderImageId: string,
     },
     text: string,
     createdAt: Date,
