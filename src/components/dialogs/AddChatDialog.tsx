@@ -2,7 +2,7 @@ import {InputText} from 'primereact/inputtext';
 import React, {useState} from "react";
 import {Dialog} from "primereact/dialog";
 import {Button} from "primereact/button";
-import {addUserToChatApi} from "../../views/chat/ChatService";
+import {addUserToChatApi} from "../../services/ChatService";
 import {toast} from "react-toastify";
 import useChat from "../../context/Chat/ChatConext";
 
@@ -13,7 +13,7 @@ export type ChatDialogProps = {
 }
 
 const AddChatDialog = (props: ChatDialogProps) => {
-    const { setUserChats } = useChat();
+    const {setUserChats} = useChat();
     const [serverId, setServerId] = useState('');
 
     const addServer = async (serverId: string) => {
@@ -42,18 +42,21 @@ const AddChatDialog = (props: ChatDialogProps) => {
             visible={props.visible}
             modal
             onHide={() => closeDialog()}
-            content={({ hide }) => (
-                <div className="flex flex-column px-6 py-4 gap-2 p-sidebar" style={{ borderRadius: '4px'}}>
+            content={({hide}) => (
+                <div className="flex flex-column px-6 py-4 gap-2 p-sidebar" style={{borderRadius: '4px'}}>
 
                     <div className="inline-flex flex-column gap-2">
                         <label htmlFor="code" className="font-semibold">
                             Enter invite code
                         </label>
-                        <InputText id="code" label="Code" className="bg-white-alpha-10 p-3" value={serverId} onChange={(e) => setServerId(e.target.value)}/>
+                        <InputText id="code" label="Code" className="bg-white-alpha-10 p-3" value={serverId}
+                                   onChange={(e) => setServerId(e.target.value)}/>
                     </div>
                     <div className="flex align-items-center gap-2">
-                        <Button label="Join" outlined onClick={() => addServer(serverId)} className="p-2 w-full hover:bg-white-alpha-10"/>
-                        <Button label="Cancel" outlined onClick={(e) => hide(e)} className="p-2 w-full hover:bg-white-alpha-10"/>
+                        <Button label="Join" outlined onClick={() => addServer(serverId)}
+                                className="p-2 w-full hover:bg-white-alpha-10"/>
+                        <Button label="Cancel" outlined onClick={(e) => hide(e)}
+                                className="p-2 w-full hover:bg-white-alpha-10"/>
                     </div>
                 </div>
             )}
