@@ -1,4 +1,5 @@
 const imageModel = require("../models/imageModel");
+const chatModel = require("../models/chatModel");
 
 const uploadImage = async (req, res) => {
     const {serverImage} = req.body;
@@ -34,4 +35,18 @@ const getImage = async (req, res) => {
     }
 }
 
-module.exports = {uploadImage, getImage};
+const deleteImage = async (req, res) => {
+    const {imageId} = req.body;
+
+    try {
+        if (!imageId) return res.status(200).json("No image found by that id");
+        await imageModel.findByIdAndDelete(imageId);
+        res.status(200).json("Successfully deletedImage");
+        console.log("SUCCESS! deleteImage");
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(error);
+    }
+}
+
+module.exports = {uploadImage, getImage, deleteImage};
