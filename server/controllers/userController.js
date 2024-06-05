@@ -2,6 +2,7 @@ const userModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
+const uuid = require("uuid");
 
 const createToken = (id, username, imageId) => {
     const jwtKey = process.env.JWT_SECRET_KEY;
@@ -117,12 +118,14 @@ const changeUserInfo = async (req, res) => {
         if (newUsername) {
             await userModel.findByIdAndUpdate(userId, {username: newUsername})
         }
-        if (changeImage) {
+        if (changeImage && newImageId) {
             await userModel.findByIdAndUpdate(userId, {imageId: newImageId})
         }
         const user = await userModel.findById(userId);
+        const code = uuid.v4().split("-").pop();
+        const newImageIdWithCode = user.imageId + "?" + code + "=1";
 
-        const token = createToken(user._id, user.username, user.imageId);
+        const token = createToken(user._id, user.username, newImageIdWithCode);
         return res.status(200).json(token);
     } catch (err) {
         console.log(err)
