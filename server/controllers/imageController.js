@@ -1,5 +1,4 @@
 const imageModel = require("../models/imageModel");
-const chatModel = require("../models/chatModel");
 
 const uploadImage = async (req, res) => {
     const {serverImage} = req.body;
