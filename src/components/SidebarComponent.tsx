@@ -2,7 +2,7 @@ import {ThemeSwitcher} from "./ThemeSwitcher";
 import React, {useRef, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {Tooltip} from "primereact/tooltip";
-import {MenuItem, MenuItemCommandEvent} from "primereact/menuitem";
+import {MenuItem} from "primereact/menuitem";
 import {Avatar} from "primereact/avatar";
 import '../assets/Sidebar.css'
 import useAuth from "../context/Auth/AuthContext";
@@ -65,7 +65,6 @@ export function SidebarComponent(props: ThemeSwitcher) {
         }
     }
 
-    //pi-folder-plus
     return (
         <div className="p-sidebar flex flex-column h-full justify-content-between p-3">
             <CustomToastContainer/>
@@ -142,7 +141,6 @@ export function SidebarComponent(props: ThemeSwitcher) {
                 <div className="mt-auto">
                     <hr className="border-top-1 border-none surface-border"/>
                     <a className="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple"
-                        // onClick={(event) => menu.current?.toggle(event)}
                        aria-controls="popup_menu_right"
                        aria-haspopup
                        onClick={() => setVisibleSettings(true)}>

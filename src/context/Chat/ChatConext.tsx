@@ -64,7 +64,6 @@ export const ChatContextProvider = ({children, user}) => {
     useEffect(() => {
         if (!user.authenticated) return;
         const newSocket = io(import.meta.env.VITE_SOCKET_SERVER_URL, {transports: ['websocket']});
-        //console.log(newSocket)
         setSocket(newSocket);
 
         return () => {
@@ -75,7 +74,6 @@ export const ChatContextProvider = ({children, user}) => {
     //get online users
     useEffect(() => {
         if (socket === null || !user?.authenticated) return;
-        //console.log(socket, userInfo?.id)
         socket.emit("addNewUser", user?.info.id)
         socket.on("getOnlineUsers", (res) => {
             setOnlineUsers(res);
@@ -94,8 +92,6 @@ export const ChatContextProvider = ({children, user}) => {
         if (socket === null || !user?.authenticated) return;
 
         socket.on("getMessage", res => {
-            console.log("recieveing message on", user.info.id);
-            console.log("INFO:", currentChat?._id, res.chatId);
             if (currentChat?._id !== res.chatId) return;
 
             setMessages((prev) => [...prev, res]);
@@ -137,7 +133,6 @@ export const ChatContextProvider = ({children, user}) => {
         const sendMessage = async () => {
             try {
                 setSendTextMessageError(null);
-                console.log(currentChatId, senderId, textMessage)
                 const response = await sendMessageApi(currentChatId, senderId, textMessage);
                 setNewMessage(response?.data)
                 //setMessages((prev) => [...prev, response?.data]);

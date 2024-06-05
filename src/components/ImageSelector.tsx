@@ -2,7 +2,6 @@ import {useEffect, useRef, useState} from "react";
 import {Button} from "primereact/button";
 import {Tooltip} from "primereact/tooltip";
 import {FileUpload} from "primereact/fileupload";
-import {ProgressBar} from "primereact/progressbar";
 import {Toast} from "primereact/toast";
 
 export type ImageSelectorProps = {
@@ -58,9 +57,6 @@ const ImageSelector = (props: ImageSelectorProps) => {
             <div className="flex align-items-center flex-wrap">
                 <div className="flex align-items-center" style={{width: '30%'}}>
                     <img alt={file.name} role="presentation" src={file.objectURL} width={100}/>
-                    <span className="flex flex-column text-left ml-3">
-                        {file.name}
-                    </span>
                 </div>
                 <Button type="button" icon="pi pi-times"
                         className="p-button-outlined p-button-rounded p-button-danger ml-auto"
