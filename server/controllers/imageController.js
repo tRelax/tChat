@@ -49,4 +49,31 @@ const deleteImage = async (req, res) => {
     }
 }
 
-module.exports = {uploadImage, getImage, deleteImage};
+const changeImageData = async (req, res) => {
+    const {imageId, newImage} = req.body;
+
+    try {
+        if (!imageId) return res.status(200).json("No image found by that id");
+
+        const newImageData = newImage.data;
+        const changedImage = await imageModel.findByIdAndUpdate(imageId, {data: newImageData});
+        res.status(200).json(changedImage);
+        console.log("SUCCESS! changeImageData");
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(error);
+    }
+}
+
+const deleteImageLocally = async (imageId) => {
+    try {
+        if (!imageId) return "No image found by that id";
+        await imageModel.findByIdAndDelete(imageId);
+        console.log("SUCCESS! deleteImageLocally");
+    } catch (error) {
+        console.log(error);
+        return error;
+    }
+};
+
+module.exports = {uploadImage, getImage, deleteImage, changeImageData, deleteImageLocally};
