@@ -12,6 +12,15 @@ export async function getImage(imageId: string): Promise<AxiosResponse> {
     });
 }
 
-export async function deleteImage(imageId: string | undefined): Promise<AxiosResponse> {
+export async function deleteImage(imageIdCrypted: string | undefined): Promise<AxiosResponse> {
+    let imageId = ""
+    if (imageIdCrypted != null) {
+        imageId = imageIdCrypted.split("?")[0];
+    }
     return await api.delete("/images/delete", {data: {imageId}});
+}
+
+export async function changeImageData(imageIdCrypted: string, newImage: ImageInfo | undefined): Promise<AxiosResponse> {
+    const imageId = imageIdCrypted.split("?")[0];
+    return await api.put("/images/changeData", {imageId, newImage});
 }

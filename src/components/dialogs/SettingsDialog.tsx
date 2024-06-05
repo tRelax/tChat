@@ -10,13 +10,13 @@ import ImageSelector from "../ImageSelector";
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 import {ImageInfo} from "../../common/types/ImageInfo";
-import {uploadImage, deleteImage} from "../../services/ImageService";
+import {uploadImage, changeImageData} from "../../services/ImageService";
 import {changeUserDetailsApi} from "../../services/UserService";
 
 export type ChatDialogProps = {
     userId: string,
     visible: boolean,
-    setVisible: (option: boolean) => void
+    setVisible: (option: boolean) => void,
 }
 
 const SettingsDialog = (props: ChatDialogProps) => {
@@ -49,10 +49,13 @@ const SettingsDialog = (props: ChatDialogProps) => {
         try {
             let imageResponse = null;
             if (changeImage) {
-                await deleteImage(auth.authInfo.info?.imageId)
-                imageResponse = await uploadImage(image);
+                if (!auth.authInfo.info?.imageId) {
+                    imageResponse = await uploadImage(image);
+                } else {
+                    imageResponse = await changeImageData(auth.authInfo.info!.imageId, image);
+                }
             }
-            const response = await changeUserDetailsApi(props.userId, newUsername ? newUsername : null, changeImage, changeImage ? imageResponse.data._id : null);
+            const response = await changeUserDetailsApi(props.userId, newUsername ? newUsername : null, changeImage, imageResponse ? imageResponse.data._id : null);
             toast.success("Successfully changed info!", {autoClose: 2000});
             auth.setToken(response.data);
             props.setVisible(false);
