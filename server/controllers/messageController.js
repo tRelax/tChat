@@ -35,4 +35,14 @@ const getMessages = async (req, res) => {
     }
 }
 
-module.exports = {createMessage, getMessages};
+const deleteAllMessagesFromServerLocally = async (chatId) => {
+    try {
+        await messageModel.deleteMany({chatId});
+        console.log("SUCCESS! deleteAllMessagesFromServerLocally");
+    } catch (error) {
+        console.log(error);
+        return error;
+    }
+};
+
+module.exports = {createMessage, getMessages, deleteAllMessagesFromServerLocally};

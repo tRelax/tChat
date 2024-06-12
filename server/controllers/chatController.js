@@ -1,6 +1,7 @@
 const chatModel = require("../models/chatModel");
 const uuid = require("uuid");
 const {deleteImageLocally} = require("./imageController");
+const {deleteAllMessagesFromServerLocally} = require("./messageController");
 
 const createChat = async (req, res) => {
     const {firstId, secondId} = req.body;
@@ -111,8 +112,9 @@ const removeUserFromChat = async (req, res) => {
 
         if (chat && chat?.members.length === 0) {
             await deleteImageLocally(chat?.imageId);
+            await deleteAllMessagesFromServerLocally(chatId);
             await chatModel.deleteOne({_id: chatId});
-            console.log("[ ", chatId, " ] server deleted, no users in server");
+            console.log("[", chatId, "] server deleted, no users in server");
         }
 
         res.status(200).json("Successfully removed from chat");
