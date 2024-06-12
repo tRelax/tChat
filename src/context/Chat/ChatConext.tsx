@@ -1,12 +1,9 @@
 import {createContext, useCallback, useContext, useEffect, useState} from "react";
-import {addUserToChatApi, getUserChatsApi} from "../../services/ChatService";
+import {getUserChatsApi} from "../../services/ChatService";
 import {getMessagesApi, sendMessageApi} from "../../services/MessageService";
 import {MessageInfo} from "../../common/types/MessageInfo";
 import {ChatInfo} from "../../common/types/ChatInfo";
-import {io} from "socket.io-client";
-import * as Buffer from "buffer";
-import {getImage} from "../../services/ImageService";
-import {c} from "vite/dist/node/types.d-aGj9QkWt";
+import {io, Socket} from "socket.io-client";
 
 
 export type ChatContextType = {
@@ -51,13 +48,13 @@ export const ChatContextProvider = ({children, user}) => {
     const [userChats, setUserChats] = useState<ChatInfo[]>(null);
     const [isUserChatsLoading, setIsUserChatsLoading] = useState(false);
     const [userChatsError, setUserChatsError] = useState(null);
-    const [currentChat, setCurrentChat] = useState(null);
+    const [currentChat, setCurrentChat] = useState<ChatInfo>(null);
     const [messages, setMessages] = useState<MessageInfo[]>(null);
     const [isMessagesLoading, setIsMessagesLoading] = useState(false);
     const [messagesError, setMessagesError] = useState(null);
-    const [newMessage, setNewMessage] = useState(null);
+    const [newMessage, setNewMessage] = useState<MessageInfo>(null);
     const [sendTextMessageError, setSendTextMessageError] = useState(null);
-    const [socket, setSocket] = useState(null);
+    const [socket, setSocket] = useState<Socket>(null);
     const [onlineUsers, setOnlineUsers] = useState([]);
 
     //initial socket
@@ -74,17 +71,17 @@ export const ChatContextProvider = ({children, user}) => {
     //get online users
     useEffect(() => {
         if (socket === null || !user?.authenticated) return;
-        socket.emit("addNewUser", user?.info.id)
+        socket.emit("addNewUser");
         socket.on("getOnlineUsers", (res) => {
             setOnlineUsers(res);
-        })
+        });
     }, [socket])
 
     //send message to room
     useEffect(() => {
         if (socket === null || !user?.authenticated) return;
 
-        socket.emit("sendMessageToRoom", {...newMessage})
+        socket.emit("sendMessageToRoom", {...newMessage});
     }, [newMessage])
 
     //recieve message and add user to room
@@ -97,7 +94,7 @@ export const ChatContextProvider = ({children, user}) => {
             setMessages((prev) => [...prev, res]);
         });
 
-        socket.emit("addUserToRoom", {userId: user?.info.id}, {chatId: currentChat?._id});
+        socket.emit("addUserToRoom", {chatId: currentChat?._id});
 
         return () => {
             socket.off("getMessage");
@@ -148,11 +145,11 @@ export const ChatContextProvider = ({children, user}) => {
 
     useEffect(() => {
         const getMessages = async () => {
-            if (!user?.authenticated) return;
+            if (!user?.authenticated || !currentChat) return;
             try {
                 setIsMessagesLoading(true);
                 setMessagesError(null);
-                const response = await getMessagesApi(currentChat?._id);
+                const response = await getMessagesApi(currentChat._id);
                 setIsMessagesLoading(false);
                 setMessages(response?.data)
             } catch (e) {
